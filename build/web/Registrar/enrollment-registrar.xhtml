@@ -1,0 +1,474 @@
+
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    template="/template/registrar-layout.xhtml">
+
+    <ui:define name="content">
+        <style>
+            .billing-container {
+                padding: 15px;
+                font-family: Arial, sans-serif;
+            }
+
+            .billing-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .billing-info {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+
+            .billing-grid {
+                display: flex;
+                gap: 30px;
+            }
+
+            .billing-grid > div {
+                flex: 1;
+            }
+
+            .billing-table {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            .billing-summary {
+                border: 1px solid #ddd;
+                padding: 15px;
+                border-radius: 5px;
+                background: #fafafa;
+            }
+
+            .summary-row {
+                display: flex;
+                justify-content: space-between;
+                margin: 8px 0;
+            }
+
+            .summary-row.total {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+
+            .billing-note {
+                color: green;
+                font-style: italic;
+            }
+            .labelCol{
+                width:140px;
+                font-weight:bold;
+                vertical-align:middle;
+            }
+
+            .valueCol{
+                width:350px;
+            }
+        </style>
+        <!-- ✅ SINGLE FORM -->
+
+        <h:form id="mainForm">
+
+            <!-- 🔔 MESSAGES -->
+            <p:growl id="msg" showDetail="true" />
+
+            <!-- ========================= -->
+            <!-- 🔍 SEARCH PANEL -->
+            <!-- ========================= -->
+            <p:panel header="Student Search">
+
+                <p:inputText value="#{enrollmentBean.searchKeyword}" 
+                             placeholder="Enter Student ID or Name"
+                             style="width:300px" />
+
+                <p:commandButton value=" 🔍 Search"
+                                 actionListener="#{enrollmentBean.searchStudent}"
+                                 update="msg subjectPanel studentDialog"
+                                 process="@form" />
+
+            </p:panel>
+
+            <br/>
+
+            <!-- ========================= -->
+            <!-- 👤 STUDENT INFO + SUBJECTS -->
+            <!-- ========================= -->
+
+            <p:panel id="subjectPanel" header="Enrollment">
+
+                <!-- STUDENT INFO -->
+                <h:panelGrid columns="2" rendered="#{not empty enrollmentBean.selectedStudent}">
+                    <h:outputText value="Student:" />
+                    <h:outputText value="#{enrollmentBean.selectedStudent.firstname} #{enrollmentBean.selectedStudent.lastname}" />
+
+                    <h:outputText value="Program:" />
+                    <h:outputText value="#{enrollmentBean.selectedStudent.program_enrolled}" />
+                </h:panelGrid>
+
+                <br/>
+
+
+                <!-- ====================================== -->
+                <!-- ENROLLMENT CONTROLS -->
+                <!-- ====================================== -->
+
+                <div style="margin-top:20px;">
+
+                    <!-- ROW 1 -->
+                    <div style="display:flex;
+                         align-items:center;
+                         gap:20px;
+                         margin-bottom:15px;
+                         flex-wrap:wrap;">
+
+                        <!-- PROGRAM -->
+                        <div>
+                            <div style="font-weight:bold; margin-bottom:5px;">
+                                Program
+                            </div>
+
+                            <p:selectOneMenu value="#{enrollmentBean.selectedProgramId}"
+                                             style="width:450px">
+
+                                <f:selectItem itemLabel="Select Program"
+                                              itemValue="#{null}" />
+
+                                <f:selectItems value="#{enrollmentBean.programs}"
+                                               var="p"
+                                               itemLabel="#{p.program_name}"
+                                               itemValue="#{p.program_id}" />
+
+                                <p:ajax listener="#{enrollmentBean.onProgramChange}"
+                                        update="yearLevel subjectTable msg" />
+
+                            </p:selectOneMenu>
+                        </div>
+
+                        <!-- YEAR LEVEL -->
+                        <div>
+                            <div style="font-weight:bold; margin-bottom:5px;">
+                                Year Level
+                            </div>
+
+                            <p:selectOneMenu id="yearLevel"
+                                             value="#{enrollmentBean.selectedYearLevel}"
+                                             style="width:180px">
+
+                                <f:selectItem itemLabel="Select Year"
+                                              itemValue="#{null}" />
+
+                                <f:selectItems value="#{enrollmentBean.availableYearLevels}" />
+
+                            </p:selectOneMenu>
+                        </div>
+
+                        <!-- SEMESTER -->
+                        <div>
+                            <div style="font-weight:bold; margin-bottom:5px;">
+                                Semester
+                            </div>
+
+                            <p:selectOneMenu value="#{enrollmentBean.selectedSemester}"
+                                             style="width:180px">
+
+                                <f:selectItem itemLabel="Select Semester"
+                                              itemValue="#{null}" />
+
+                                <f:selectItem itemLabel="1st Semester"
+                                              itemValue="1st" />
+
+                                <f:selectItem itemLabel="2nd Semester"
+                                              itemValue="2nd" />
+
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <!-- ROW 2 -->
+                    <div style="display:flex;
+                         align-items:center;
+                         gap:20px;
+                         margin-bottom:15px;
+                         flex-wrap:wrap;">
+
+                        <!-- ACADEMIC YEAR -->
+                        <div>
+                            <div style="font-weight:bold; margin-bottom:5px;">
+                                Academic Year
+                            </div>
+
+                            <p:inputText value="#{enrollmentBean.selectedAcademicYear}"
+                                         placeholder="e.g. 2026-2027"
+                                         style="width:220px" />
+                        </div>
+
+                        <!-- BUTTON -->
+                        <div style="margin-top:23px;">
+
+                            <p:commandButton value="📚 Load Subjects"
+                                             actionListener="#{enrollmentBean.loadSubjectsManual}"
+                                             process="@form"
+                                             update="subjectTable msg" />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <p:dataTable id="subjectTable"
+                             value="#{enrollmentBean.offeredSubjects}"
+                             var="sub"
+                             selection="#{enrollmentBean.selectedSubjects}"
+                             rowKey="#{sub.programCourseId}"
+                             paginator="true"
+                             rows="10">
+
+                    <p:ajax event="rowSelectCheckbox" update="mainForm:reviewBtn"/>
+                    <p:ajax event="rowUnselectCheckbox" update="mainForm:reviewBtn"/>
+                    <p:ajax event="toggleSelect" update="mainForm:reviewBtn"/>
+
+                    <!-- ✅ THIS enables checkbox multi-select -->
+                    <p:column selectionMode="multiple" style="width:50px" />
+
+                    <p:column headerText="Code">
+                        #{sub.courseCode}
+                    </p:column>
+
+                    <p:column headerText="Description">
+                        #{sub.courseTitle}
+                    </p:column>
+
+                    <p:column headerText="Units">
+                        #{sub.units}
+                    </p:column>
+
+                    <p:column headerText="Type">
+                        #{sub.courseType}
+                    </p:column>
+
+                </p:dataTable>
+                <br/>
+
+                <!-- ACTION BUTTON -->
+                <p:commandButton value="Review" id="reviewBtn"
+                                 actionListener="#{enrollmentBean.reviewEnrollment}"
+                                 process="@form"
+                                 update="reviewPanel msg"
+                                 rendered="#{not empty enrollmentBean.selectedStudent}"
+                                 disabled="#{empty enrollmentBean.selectedSubjects}" />
+            </p:panel>
+
+            <!-- ========================= -->
+            <!-- 👥 STUDENT SELECTION DIALOG -->
+            <!-- ========================= -->
+            <p:dialog id="studentDialog"
+                      header="Select Student"
+                      widgetVar="studentDialog"
+                      modal="true"
+                      width="600">
+
+                <p:dataTable value="#{enrollmentBean.searchResults}"
+                             var="s"
+                             paginator="true"
+                             rows="5"
+                             emptyMessage="No students found">
+
+                    <p:column headerText="Student No">
+                        #{s.studno}
+                    </p:column>
+
+                    <p:column headerText="Name">
+                        #{s.lastname}, #{s.firstname}
+                    </p:column>
+
+                    <p:column headerText="Program">
+                        #{s.program_enrolled}
+                    </p:column>
+
+                    <!-- ✅ SAFE SELECTION -->
+                    <p:column headerText="Action">
+                        <p:commandButton value="✅ Select"
+                                         actionListener="#{enrollmentBean.selectStudent}"
+                                         process="@this"
+                                         update="subjectPanel msg">
+
+                            <f:setPropertyActionListener 
+                                target="#{enrollmentBean.tempStudent}" 
+                                value="#{s}" />
+
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:dialog>
+
+            <!-- ========================= -->
+            <!-- 🧾 REVIEW DIALOG -->
+            <!-- ========================= -->
+            <p:dialog header="Enrollment Assessment"
+                      widgetVar="reviewDialog"
+                      modal="true"
+                      style="width:85vw; max-width:1100px"
+                      closable="true"
+                      maximizable="true">
+
+                <h:panelGroup id="reviewPanel" layout="block" styleClass="billing-container">
+
+                    <!-- 🔷 HEADER -->
+                    <div class="billing-header">
+                        <h2>Assessment of Fees</h2>
+                        <h:outputText value="Date: #{java.time.LocalDate}" />
+                    </div>
+
+                    <!-- 🔷 STUDENT INFO -->
+                    <div class="billing-info">
+                        <div>
+                            <strong>Student Number:</strong> #{enrollmentBean.selectedStudent.studno}
+                        </div>
+                        <div>
+                            <strong>Student:</strong> #{enrollmentBean.selectedStudent.fullName}
+                        </div>
+                        <div>
+                            <strong>Program:</strong> #{enrollmentBean.selectedStudent.program_enrolled}
+                        </div>
+                        <div>
+                            <strong>Total Units:</strong> #{enrollmentBean.totalUnits}
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <!-- 🔷 SUBJECTS TABLE -->
+                    <h3>Enrolled Subjects</h3>
+
+                    <p:dataTable value="#{enrollmentBean.selectedSubjects}" var="s">
+
+                        <p:column headerText="Course Code">
+                            #{s.courseCode}
+                        </p:column>
+
+                        <p:column headerText="Course Title">
+                            #{s.courseTitle}
+                        </p:column>
+
+                        <p:column headerText="Units" style="text-align:center;">
+                            #{s.units}
+                        </p:column>
+                        
+                        <p:column headerText="Type" style="text-align:center;">
+                            #{s.courseType}
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <br/>
+
+                    <!-- 🔷 FEES + SUMMARY (LANDSCAPE STYLE) -->
+                    <div class="billing-grid">
+
+                        <!-- LEFT: FEES BREAKDOWN -->
+                        <div>
+                            <h3>Fee Breakdown</h3>
+
+                            <p:dataTable value="#{enrollmentBean.fixedFees}" var="fee"
+                                         rendered="#{not empty enrollmentBean.fixedFees}"
+                                         styleClass="billing-table">
+
+                                <p:column headerText="Fee Name">
+                                    #{fee.feeName}
+                                </p:column>
+
+                                <p:column headerText="Amount" style="text-align:right;">
+                                    <h:outputText value="#{fee.amount}">
+                                        <f:convertNumber type="currency" currencySymbol="₱"/>
+                                    </h:outputText>
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
+
+                        <!-- RIGHT: SUMMARY -->
+                        <div class="billing-summary">
+
+                            <h3>Summary</h3>
+
+                            <div class="summary-row">
+                                <span>Tuition Fee:</span>
+                                <span>
+                                    <h:outputText value="#{enrollmentBean.tuitionFee}">
+                                        <f:convertNumber type="currency" currencySymbol="₱"/>
+                                    </h:outputText>
+                                </span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>Fixed Fees:</span>
+                                <span>
+                                    <h:outputText value="#{enrollmentBean.fixedFeeTotal}">
+                                        <f:convertNumber type="currency" currencySymbol="₱"/>
+                                    </h:outputText>
+                                </span>
+                            </div>
+
+                            <hr/>
+
+                            <div class="summary-row total">
+                                <span>GRAND TOTAL:</span>
+                                <span>
+                                    <h:outputText value="#{enrollmentBean.grandTotal}">
+                                        <f:convertNumber type="currency" currencySymbol="₱"/>
+                                    </h:outputText>
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <br/>
+
+                    <!-- 🔷 NOTE -->
+                    <div class="billing-note">
+                        Note: This will be recorded as the student's official account.
+                    </div>
+
+                    <br/>
+
+                    <!-- 🔷 ACTION BUTTONS -->
+                    <div style="text-align:right;">
+                        <p:commandButton value="✅ Confirm &amp; Generate"
+                                         action="#{enrollmentBean.processEnrollment}"
+                                         process="@form"
+                                         update="mainForm msg"
+                                         oncomplete="PF('reviewDialog').hide()" />
+
+                        <p:commandButton value="🖨️ Print Assessment"
+                                         ajax="false"
+                                         action="#{enrollmentBean.printAssessment}"
+                                         onclick="this.form.target = '_blank'"/>
+
+                        <p:commandButton value="❌ Cancel"
+                                         type="button"
+                                         styleClass="ui-button-secondary"
+                                         onclick="PF('reviewDialog').hide();" />
+                    </div>
+
+                </h:panelGroup>
+            </p:dialog>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

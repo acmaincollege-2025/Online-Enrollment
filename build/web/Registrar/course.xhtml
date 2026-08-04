@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    template="/template/registrar-layout.xhtml">
+
+    <ui:define name="content">
+
+        <!-- COURSE MANAGEMENT FORM -->
+        <h:form id="courseForm" enctype="multipart/form-data">
+
+            <p:panel header="Course Management" style="margin-bottom:20px">
+
+                <p:messages id="msgs" closable="true" showDetail="true" />
+
+                <p:panelGrid columns="4" style="width:auto; margin-left:0;"
+                             styleClass="ui-fluid">
+
+                    <!-- ROW 1 -->
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="course_code" value="Course Code:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="course_code"
+                                         value="#{courseBean.course.courseCode}"
+                                         required="true" />
+                        </p:column>
+
+                        <p:column>
+                            <p:outputLabel for="course_title" value="Course Title:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="course_title"
+                                         value="#{courseBean.course.courseTitle}"
+                                         required="true" />
+                        </p:column>
+                    </p:row>
+
+                    <!-- ROW 2 -->
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="units" value="Units:" />
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="units"
+                                       value="#{courseBean.course.units}"
+                                       min="1" max="10"
+                                       required="true" />
+                        </p:column>
+
+                        <p:column>
+                            <p:outputLabel for="yearLevel" value="Year Level:" />
+                        </p:column>
+                        <p:column>
+                            <p:spinner id="yearLevel"
+                                       value="#{courseBean.course.yearLevel}"
+                                       min="1" max="4"
+                                       required="true" />
+                        </p:column>
+                    </p:row>
+
+                    <!-- ROW 3 -->
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="semester" value="Semester:" />
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="semester"
+                                             value="#{courseBean.course.semester}"
+                                             required="true">
+                                <f:selectItem itemLabel="Select Semester" itemValue="" />
+                                <f:selectItem itemLabel="1st" itemValue="1st" />
+                                <f:selectItem itemLabel="2nd" itemValue="2nd" />
+                                <f:selectItem itemLabel="Summer" itemValue="Summer" />
+                            </p:selectOneMenu>
+                        </p:column>
+
+                        <p:column>
+                            <p:outputLabel for="program" value="Program:" />
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="program"
+                                             value="#{courseBean.course.programId}"
+                                             required="true">
+                                <f:selectItem itemLabel="Select Program" itemValue="" />
+                                <f:selectItems value="#{courseBean.programList}" var="prog"
+                                               itemLabel="#{prog.program_name}"
+                                               itemValue="#{prog.program_id}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+                <p:separator />
+
+                <p:commandButton value="💾 #{courseBean.editCourse(c) ? 'Update Course' : 'Add Course'}"
+                                 action="#{courseBean.saveCourse}"
+                                 update="courseForm:msgs"/>
+                <!--
+                                <p:commandButton value="📄 View List"
+                                                 action="course-list"
+                                                 styleClass="p-button-secondary" />
+                -->               
+                <p:commandButton value="🔄 Reset"
+                                 action="#{courseBean.clearForm}"
+                                 update="courseForm"
+                                 styleClass="p-button-secondary" />
+
+            </p:panel>
+
+
+            <p:spacer height="20" />
+
+
+            <!-- EXCEL UPLOAD -->
+            <p:panel header="Upload Courses via Excel (.xlsx)">
+
+                <p:fileUpload mode="simple"
+                              value="#{courseBean.file}"
+                              label="Choose Excel File" />
+
+                <p:commandButton value="📲 Upload Excel"
+                                 action="#{courseBean.uploadCourses}"
+                                 update="courseForm:msgs"/>
+
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

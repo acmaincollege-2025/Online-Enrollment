@@ -1,0 +1,266 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/registrar-layout.xhtml">
+
+    <ui:define name="content">
+        <h:outputStylesheet>
+            .form-field {
+            margin-bottom: 15px;
+            }
+
+            .form-field .ui-inputfield,
+            .form-field .ui-selectonemenu,
+            .form-field textarea {
+            width: 100% !important;
+            }
+            .ui-selectonemenu {
+            width: 100% !important;
+            }
+
+            .ui-selectonemenu-label {
+            width: calc(100% - 20px) !important;
+            }
+
+            .ui-inputfield,
+            textarea {
+            width: 100% !important;
+            box-sizing: border-box;
+            }
+            .form-field{
+            padding:8px;
+            box-sizing:border-box;
+            }
+
+            .form-field label{
+            display:block;
+            margin-bottom:6px;
+            font-weight:600;
+            }
+            .col50{
+            width:50%;
+            vertical-align:top;
+            }
+
+            .col50 label{
+            display:block;
+            margin-bottom:6px;
+            }
+            .ui-selectonemenu,
+            .ui-inputfield,
+            textarea{
+            width:100% !important;
+            box-sizing:border-box;
+            }
+        </h:outputStylesheet>
+        <h:form id="studentForm">
+
+            <p:growl id="msgs" showDetail="true"/>
+
+            <div class="page-header">
+                <h2>👨‍🎓 Student Information Management</h2>
+            </div>
+
+            <p:tabView dynamic="false">
+
+                <!-- PERSONAL -->
+                <p:tab title="Personal Information">
+
+                    <div class="ui-g">
+
+                        <div class="ui-g-12 ui-md-3">
+                            <p:outputLabel value="Student No *"/>
+                            <p:inputText value="#{studentBean.student.studno}"
+                                         required="true"/>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+                            <p:outputLabel value="First Name *"/>
+                            <p:inputText value="#{studentBean.student.firstname}"/>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+                            <p:outputLabel value="Last Name *"/>
+                            <p:inputText value="#{studentBean.student.lastname}"/>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+                            <p:outputLabel value="Middle Name"/>
+                            <p:inputText value="#{studentBean.student.middlename}"/>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+
+                            <p:outputLabel
+                                value="Gender"
+                                style="display:block;margin-bottom:6px;font-weight:bold;" />
+
+                            <p:selectOneMenu
+                                value="#{studentBean.student.gender}"
+                                style="width:80%;">
+
+                                <f:selectItem itemLabel="Select Gender" itemValue="" />
+                                <f:selectItem itemLabel="Male" itemValue="Male" />
+                                <f:selectItem itemLabel="Female" itemValue="Female" />
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+                            <p:outputLabel value="Birth Date"/>
+                            <p:calendar value="#{studentBean.student.dob}"
+                                        pattern="yyyy-MM-dd"/>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+                            <p:outputLabel value="Contact No"/>
+                            <p:inputText value="#{studentBean.student.contactno}"/>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+                            <p:outputLabel value="Email"/>
+                            <p:inputText value="#{studentBean.student.email}"/>
+                        </div>
+
+                        <div class="ui-g-12">
+                            <p:outputLabel value="Address"/>
+                            <p:inputTextarea
+                                value="#{studentBean.student.address}"
+                                rows="5"
+                                style="width:100%;min-width:100%;max-width:100%;" />
+                        </div>
+
+                    </div>
+
+                </p:tab>
+
+                <!-- GUARDIAN -->
+                <p:tab title="Parent / Guardian">
+
+                    <h:panelGrid columns="2"
+                                 cellpadding="10"
+                                 width="100%"
+                                 columnClasses="col50,col50">
+
+                        <p:outputPanel>
+                            <p:outputLabel value="Guardian Name"/>
+                            <p:inputText value="#{studentBean.student.guardian}"
+                                         style="width:100%"/>
+                        </p:outputPanel>
+
+                        <p:outputPanel>
+                            <p:outputLabel value="Guardian Contact"/>
+                            <p:inputText value="#{studentBean.student.guardianNumber}"
+                                         style="width:100%"/>
+                        </p:outputPanel>
+
+                        <p:outputPanel>
+                            <p:outputLabel value="Father's Name"/>
+                            <p:inputText value="#{studentBean.student.fathername}"
+                                         style="width:100%"/>
+                        </p:outputPanel>
+
+                        <p:outputPanel>
+                            <p:outputLabel value="Father Occupation"/>
+                            <p:inputText value="#{studentBean.student.fatherOccupation}"
+                                         style="width:100%"/>
+                        </p:outputPanel>
+
+                        <p:outputPanel>
+                            <p:outputLabel value="Mother's Name"/>
+                            <p:inputText value="#{studentBean.student.mothername}"
+                                         style="width:100%"/>
+                        </p:outputPanel>
+
+                        <p:outputPanel>
+                            <p:outputLabel value="Mother Occupation"/>
+                            <p:inputText value="#{studentBean.student.motherOccupation}"
+                                         style="width:100%"/>
+                        </p:outputPanel>
+
+                    </h:panelGrid>
+
+                </p:tab>
+
+                <!-- ACADEMIC -->
+                <p:tab title="Academic Information">
+
+                    <div class="ui-g">
+
+                        <div class="ui-g-12 ui-md-6">
+                            <p:outputLabel value="Program"/>
+                            <p:selectOneMenu value="#{studentBean.student.programId}">
+                                <f:selectItems value="#{studentBean.programList}"
+                                               var="p"
+                                               itemLabel="#{p.program_name}"
+                                               itemValue="#{p.program_code}"/>
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-6">
+                            <p:outputLabel value="Student Type"/>
+                            <p:selectOneMenu value="#{studentBean.student.studentType}">
+                                <f:selectItem itemLabel="Freshman" itemValue="freshman"/>
+                                <f:selectItem itemLabel="Transferee" itemValue="transferee"/>
+                                <f:selectItem itemLabel="Returnee" itemValue="returnee"/>
+                                <f:selectItem itemLabel="Old Student" itemValue="old"/>
+                            </p:selectOneMenu>
+                        </div>
+
+                    </div>
+
+                </p:tab>
+
+                <!-- PHOTO -->
+                <p:tab title="Student Photo">
+
+                    <p:fileUpload
+                        mode="advanced"
+                        auto="true"
+                        dragDropSupport="true"
+                        listener="#{studentBean.handleFileUpload}"
+                        update=":studentForm:msgs"
+                        sizeLimit="5242880"/>
+
+                    <br/>
+
+                    <p:graphicImage
+                        value="/uploads/students/#{studentBean.student.photo}"
+                        width="150"
+                        rendered="#{not empty studentBean.student.photo}"/>
+
+                </p:tab>
+
+            </p:tabView>
+
+            <!-- ACTION BUTTONS -->
+
+            <div style="margin-top:20px;text-align:right">
+
+                <p:commandButton
+                    value="Save Student"
+                    icon="ui-icon-disk"
+                    action="#{studentBean.saveStudent}"
+                    update=":studentForm:msgs"/>
+
+                <p:commandButton
+                    value="Clear"
+                    icon="ui-icon-refresh"
+                    process="@this"
+                    action="#{studentBean.clearForm}"
+                    update="@form"
+                    styleClass="ui-button-secondary"/>
+
+            </div>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

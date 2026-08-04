@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout-cashier.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <style>
+            .page-header {
+                margin-bottom: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+                font-weight: 600;
+            }
+
+            .page-title i {
+                margin-right: 10px;
+            }
+
+            .page-subtitle {
+                color: #777;
+                margin-top: 5px;
+            }
+
+            .modern-card {
+                border-radius: 10px;
+            }
+
+            .search-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 15px;
+                align-items: end;
+            }
+
+            .full-width {
+                width: 100%;
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(3,1fr);
+                gap: 20px;
+            }
+
+            .search-btn {
+                display: flex;
+                align-items: end;
+            }
+
+            .status-badge {
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 12px;
+            }
+        </style>
+
+        <h:form id="cashierForm">
+
+            <p:growl id="msgs" />
+
+            <!-- HEADER -->
+            <div class="page-header">
+                <h2>
+                    <i class="pi pi-wallet"></i>
+                    Cashier Payment Inquiry
+                </h2>
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- SEARCH -->
+            <!-- ===================================================== -->
+            <p:panel header="Search Student" style="margin-bottom:15px;">
+
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <h:outputText value="Search:" />
+
+                    <p:inputText value="#{paymentBean.searchKeyword}"
+                                 placeholder="Student No / Name"
+                                 style="width:300px;" />
+
+                    <p:commandButton value="🔍 Search"
+                                     action="#{paymentBean.searchStudentAccounts}"
+                                     update="studentTable" />
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <!-- ===================================================== -->
+            <!-- STUDENT TABLE -->
+            <!-- ===================================================== -->
+            <p:dataTable id="studentTable"
+                         value="#{paymentBean.searchResults}"
+                         var="s"
+                         paginator="true"
+                         rows="5"
+                         selectionMode="single"
+                         selection="#{paymentBean.selectedStudent}"
+                         rowKey="#{s.studno}">
+
+                <p:ajax event="rowSelect"
+                        listener="#{paymentBean.onSelectStudent}"
+                        update="cashierForm:paymentHistory " />
+
+                <p:column headerText="Student No">
+                    <h:outputText value="#{s.studno}" />
+                </p:column>
+
+                <p:column headerText="Name">
+                    <h:outputText value="#{s.studentName}" />
+                </p:column>
+
+                <p:column headerText="Program">
+                    <h:outputText value="#{s.program_enrolled}" />
+                </p:column>
+
+            </p:dataTable>
+            <br/>
+
+            <!-- PAYMENT HISTORY -->
+            <p:panel id="paymentHistory"
+                     header="Payment History">
+
+                <p:dataTable value="#{paymentBean.paymentHistory}"
+                             var="pay"
+                             paginator="true"
+                             rows="10"
+                             emptyMessage="No payments found">
+
+                    <p:column headerText="Date">
+                        <h:outputText value="#{pay.paymentDate}">
+                            <f:convertDateTime pattern="MMM dd, yyyy" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Ref No">
+                        <h:outputText value="#{pay.paymentReferenceNumber}"/>
+                    </p:column>
+
+                    <p:column headerText="Method">
+                        <h:outputText value="#{pay.paymentMethod}"/>
+                    </p:column>
+
+                    <p:column headerText="Amount">
+                        <h:outputText value="#{pay.amountPaid}">
+                            <f:convertNumber type="currency" currencySymbol="₱" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Remarks">
+                        <h:outputText value="#{pay.remarks}"/>
+                    </p:column>
+
+
+                </p:dataTable>
+                <!-- PRINT BUTTON -->
+                <p:commandButton id="printBtn"
+                                 value="📇  Print SOA"
+                                 rendered="#{not empty paymentBean.selectedStudent}"
+                                 type="button"
+                                 onclick="PF('soaDlg').show()" />
+            </p:panel>
+
+            <br/>
+
+
+
+
+        </h:form>
+
+
+        <!-- SOA DIALOG -->
+        <p:dialog widgetVar="soaDlg"
+                  header="Print Statement of Account"
+                  modal="true"
+                  width="400">
+
+            <h:form>
+
+                <p:panelGrid columns="2">
+
+                    <p:outputLabel value="From" />
+                    <p:calendar value="#{paymentBean.fromDate}" pattern="MM/dd/yyyy"/>
+
+                    <p:outputLabel value="To" />
+                    <p:calendar value="#{paymentBean.toDate}" pattern="MM/dd/yyyy"/>
+
+                </p:panelGrid>
+
+                <br/>
+
+                <p:commandButton value=" 📜 Generate PDF"
+                                 ajax="false" onclick="this.form.target = '_blank'" 
+                                 action="#{paymentBean.printSOA}" />
+
+            </h:form>
+
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

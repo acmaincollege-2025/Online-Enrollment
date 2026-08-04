@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/layout-cashier.xhtml">
+
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-panelgrid.showcase-text-align-center .ui-grid-responsive .ui-panelgrid-cell {
+                text-align: center;
+            }
+
+            .customPanelGrid .ui-panelgrid-content {
+                align-items: center;
+            }
+        </style>
+        <!-- ================= CALCULATION TYPE ================= -->
+        <h:form id="calcForm">
+
+            <p:panel header="Calculation Types" style="margin-bottom:20px;">
+
+                <p:commandButton value="➕ Add"
+                                 actionListener="#{lookupBean.newCalculationType}"
+                                 update=":calcDialogForm"
+                                 oncomplete="PF('calcDialog').show()" />
+
+                <p:dataTable value="#{lookupBean.calculationTypes}" var="c">
+
+                    <p:column headerText="ID">
+                        #{c.id}
+                    </p:column>
+
+                    <p:column headerText="Name">
+                        #{c.name}
+                    </p:column>
+
+                    <p:column headerText="Actions">
+
+                        <p:commandButton value="📝 Update" alt="Edit"
+                                         actionListener="#{lookupBean.editCalculationType(c)}"
+                                         update=":calcDialogForm"
+                                         oncomplete="PF('calcDialog').show()" />
+
+                        <p:commandButton value="🗑️ Remove" alt="Remove"
+                                         actionListener="#{lookupBean.deleteCalculationType(c)}"
+                                         update="calcForm" />
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+        </h:form>
+
+
+        <!-- ================= APPLIES TO ================= -->
+        <h:form id="applyForm">
+
+            <p:panel header="Applies To">
+
+                <p:commandButton value="➕ Add"
+                                 actionListener="#{lookupBean.newAppliesTo}"
+                                 update=":applyDialogForm"
+                                 oncomplete="PF('applyDialog').show()" />
+
+                <p:dataTable value="#{lookupBean.appliesToList}" var="a">
+
+                    <p:column headerText="ID">
+                        #{a.id}
+                    </p:column>
+
+                    <p:column headerText="Name">
+                        #{a.name}
+                    </p:column>
+
+                    <p:column headerText="Actions">
+
+                        <p:commandButton value="📝 Update" alt="Edit"
+                                         actionListener="#{lookupBean.editAppliesTo(a)}"
+                                         update=":applyDialogForm"
+                                         oncomplete="PF('applyDialog').show()" />
+
+                        <p:commandButton value="🗑️ Remove" alt="Remove"
+                                         actionListener="#{lookupBean.deleteAppliesTo(a)}"
+                                         update="applyForm" />
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+        </h:form>
+
+
+        <!-- ================= CALC TYPE DIALOG ================= -->
+        <h:form id="calcDialogForm">
+            <p:dialog header="Calculation Type"
+                      widgetVar="calcDialog"
+                      modal="true">
+
+                <h:panelGrid columns="2">
+
+                    <h:outputLabel value="Name:" />
+                    <p:inputText value="#{lookupBean.calculationType.name}" required="true"/>
+
+                </h:panelGrid>
+
+                <p:commandButton value=" 💾 Save"
+                                 actionListener="#{lookupBean.saveCalculationType}"
+                                 update=":calcForm"
+                                 oncomplete="PF('calcDialog').hide()" />
+
+            </p:dialog>
+        </h:form>
+
+
+        <!-- ================= APPLIES TO DIALOG ================= -->
+        <h:form id="applyDialogForm">
+            <p:dialog header="Applies To"
+                      widgetVar="applyDialog"
+                      modal="true">
+
+                <h:panelGrid columns="2">
+
+                    <h:outputLabel value="Name:" />
+                    <p:inputText value="#{lookupBean.appliesTo.name}" required="true"/>
+
+                </h:panelGrid>
+
+                <p:commandButton value="💾 Save"
+                                 actionListener="#{lookupBean.saveAppliesTo}"
+                                 update=":applyForm"
+                                 oncomplete="PF('applyDialog').hide()" />
+
+            </p:dialog>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

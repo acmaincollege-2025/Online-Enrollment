@@ -1,0 +1,248 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/layout-admission.xhtml">
+
+    <ui:define name="content">
+
+        <h:form id="studentForm" class="p-fluid">
+
+            <h2 class="p-mb-3">👨‍🎓 Student Management</h2>
+
+            <p:growl id="msgs" showDetail="true" />
+
+            <!-- ================= STUDENT INFO ================= -->
+            <p:panel header="📄 Student Information" style="margin-bottom:20px">
+
+                <div class="ui-g ui-fluid">
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="Student No *" />
+                        <p:inputText value="#{studentBean.student.studno}" required="true"/>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="First Name *" />
+                        <p:inputText value="#{studentBean.student.firstname}" required="true"/>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="Last Name *" />
+                        <p:inputText value="#{studentBean.student.lastname}" required="true"/>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="Middle Name" />
+                        <p:inputText value="#{studentBean.student.middlename}"/>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="Gender" />
+                        <p:selectOneMenu value="#{studentBean.student.gender}">
+                            <f:selectItem itemLabel="Select Gender" itemValue="" />
+                            <f:selectItem itemLabel="Male" itemValue="Male" />
+                            <f:selectItem itemLabel="Female" itemValue="Female" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="Date of Birth" />
+                        <p:calendar value="#{studentBean.student.dob}"
+                                    pattern="yyyy-MM-dd"
+                                    navigator="true"
+                                    mindate="#{studentBean.minDob}"
+                                    maxdate="#{studentBean.maxDob}"/>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="Contact No" />
+                        <p:inputText value="#{studentBean.student.contactno}"/>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-3">
+                        <p:outputLabel value="Email" />
+                        <p:inputText value="#{studentBean.student.email}"/>
+                    </div>
+
+                    <div class="ui-g-12">
+                        <p:outputLabel value="Address" />
+                        <p:inputTextarea value="#{studentBean.student.address}"
+                                         rows="3"
+                                         autoResize="true"/>
+                    </div>
+
+                </div>
+            </p:panel>
+
+
+
+            <!-- ================= PARENT / GUARDIAN ================= -->
+            <p:panel header="👨‍👩‍👧 Parent / Guardian Information" style="margin-bottom:20px">
+
+                <div class="ui-g ui-fluid">
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Guardian Name" />
+                        <p:inputText value="#{studentBean.student.guardian}" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Guardian Contact" />
+                        <p:inputText value="#{studentBean.student.guardianNumber}" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Father's Name" />
+                        <p:inputText value="#{studentBean.student.fathername}" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Father's Occupation" />
+                        <p:inputText value="#{studentBean.student.fatherOccupation}" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Mother's Name" />
+                        <p:inputText value="#{studentBean.student.mothername}" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Mother's Occupation" />
+                        <p:inputText value="#{studentBean.student.motherOccupation}" />
+                    </div>
+
+                    <div class="ui-g-12">
+                        <p:outputLabel value="Parent Address" />
+                        <p:inputTextarea value="#{studentBean.student.parentAddress}"
+                                         rows="3" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-4">
+                        <p:outputLabel value="Parent Contact No" />
+                        <p:inputText value="#{studentBean.student.parentContactNumber}" />
+                    </div>
+
+                </div>
+            </p:panel>
+
+
+            <!-- ================= ACADEMIC ================= -->
+            <p:panel header="🎓 Academic Details" style="margin-bottom:20px">
+
+                <div class="ui-g ui-fluid">
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Program" />
+                        <p:selectOneMenu value="#{studentBean.student.programId}">
+                            <f:selectItem itemLabel="Select Program" itemValue="" />
+                            <f:selectItems value="#{studentBean.programList}"
+                                           var="p"
+                                           itemLabel="#{p.program_name}"
+                                           itemValue="#{p.program_code}" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:outputLabel value="Student Type" />
+                        <p:selectOneMenu value="#{studentBean.student.studentType}">
+                            <f:selectItem itemLabel="Select Type" itemValue="" />
+                            <f:selectItem itemLabel="Freshman" itemValue="freshman" />
+                            <f:selectItem itemLabel="Transferee" itemValue="transferee" />
+                            <f:selectItem itemLabel="Returnee" itemValue="returnee" />
+                            <f:selectItem itemLabel="Old Student" itemValue="old" />
+                        </p:selectOneMenu>
+                    </div>
+
+                </div>
+            </p:panel>
+
+
+            <!-- ================= PHOTO UPLOAD ================= -->
+            <p:panel header="📷 Student Photo" style="margin-bottom:20px">
+
+                <p:fileUpload mode="advanced"
+                              auto="true"
+                              dragDropSupport="true"
+                              listener="#{studentBean.handleFileUpload}"
+                              update="msgs"
+                              sizeLimit="5242880"
+                              allowTypes="/(\.|\/)(jpg|jpeg|png)$/" />
+
+                <p:graphicImage value="/uploads/students/#{studentBean.student.photo}"
+                                width="120"
+                                rendered="#{not empty studentBean.student.photo}"
+                                style="margin-top:15px;border-radius:6px" />
+            </p:panel>
+
+
+            <!-- ================= STUDENT LIST ================= -->
+            <p:panel header="📋 Student List">
+
+                <p:dataTable value="#{studentBean.studentList}"
+                             var="s"
+                             paginator="true"
+                             rows="10"
+                             emptyMessage="No students found"
+                             rowStyleClass="ui-widget-content"
+                             styleClass="ui-datatable-striped ui-datatable-hoverable">
+
+                    <p:column headerText="Student No" style="width:120px">
+                        #{s.studno}
+                    </p:column>
+
+                    <p:column headerText="Name">
+                        #{s.lastname}, #{s.firstname}
+                    </p:column>
+
+                    <p:column headerText="Email">
+                        #{s.email}
+                    </p:column>
+
+                    <p:column headerText="Actions"
+                              style="width:180px;text-align:center">
+
+                        <p:commandButton value="Edit"
+                                         icon="ui-icon-pencil"
+                                         action="#{studentBean.editStudent(s)}"
+                                         update="studentForm"
+                                         style="margin-right:6px" />
+
+                        <p:commandButton value="Delete"
+                                         icon="ui-icon-trash"
+                                         styleClass="ui-button-danger"
+                                         process="@this"
+                                         actionListener="#{studentBean.confirmDelete(s)}"
+                                         oncomplete="PF('deleteDialog').show()" />
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+
+
+            <!-- DELETE CONFIRM -->
+            <p:confirmDialog widgetVar="deleteDialog"
+                             header="Confirm Deletion"
+                             message="Are you sure you want to delete this student?"
+                             severity="warn">
+
+                <p:commandButton value="Yes"
+                                 action="#{studentBean.deleteStudentConfirmed}"
+                                 update="studentForm msgs"
+                                 oncomplete="PF('deleteDialog').hide()"/>
+
+                <p:commandButton value="No"
+                                 type="button"
+                                 onclick="PF('deleteDialog').hide()"/>
+            </p:confirmDialog>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

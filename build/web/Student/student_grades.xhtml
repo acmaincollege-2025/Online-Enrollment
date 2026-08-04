@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>My Semestral Grades</title>
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="/student/student-template.xhtml">
+
+            <ui:define name="content">
+
+                <h:form id="gradeForm">
+
+                    <!-- PAGE HEADER -->
+                    <p:panel header="📘 Semestral Grades" styleClass="ui-panel-shadow">
+
+                        <!-- STUDENT INFO -->
+                        <p:panelGrid columns="2" style="width:100%;margin-bottom:15px"
+                                     columnClasses="label,value">
+
+                            <h:outputText value="Student No:" />
+                            <h:outputText value="#{studentGradeBean.student.studno}" />
+
+                            <h:outputText value="Full Name:" />
+                            <h:outputText
+                                value="#{studentGradeBean.student.lastname}, #{studentGradeBean.student.firstname}" />
+
+                            <h:outputText value="Program:" />
+                            <h:outputText value="#{studentGradeBean.student.program_enrolled}" />
+
+                        </p:panelGrid>
+
+                        <!-- GRADES TABLE -->
+                        <p:dataTable value="#{studentGradeBean.courseProgressList}"
+                                     var="cp"
+                                     rows="10"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     emptyMessage="No grades available."
+                                     styleClass="ui-datatable-striped">
+
+                            <p:column headerText="Course Code">
+                                <h:outputText value="#{cp.course.courseCode}" />
+                            </p:column>
+
+                            <p:column headerText="Course Title">
+                                <h:outputText value="#{cp.course.courseTitle}" />
+                            </p:column>
+
+                            <p:column headerText="Units" style="text-align:center">
+                                <h:outputText value="#{cp.course.units}" />
+                            </p:column>
+
+                            <p:column headerText="Semester" style="text-align:center">
+                                <h:outputText value="#{cp.course.semester}" />
+                            </p:column>
+
+                            <p:column headerText="Year Level" style="text-align:center">
+                                <h:outputText value="#{cp.course.yearLevel}" />
+                            </p:column>
+
+                            <p:column headerText="Final Grade" style="text-align:center">
+                                <h:outputText value="#{cp.finalGrade}" />
+                            </p:column>
+
+                            <p:column headerText="Remarks" style="text-align:center">
+                                <h:outputText value="#{cp.remarks}"
+                                              style="#{cp.remarks eq 'PASSED' ? 'color:green;font-weight:bold'
+                                                       : cp.remarks eq 'FAILED' ? 'color:red;font-weight:bold'
+                                                       : ''}" />
+                            </p:column>
+
+                        </p:dataTable>
+                        <p:commandButton value="📄 Download PDF"
+                                         icon="ui-icon-print"
+                                         actionListener="#{studentGradeBean.printPdf}"
+                                         ajax="false"
+                                         style="margin-bottom:10px"/>
+
+                    </p:panel>
+
+                </h:form>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </h:body>
+</html>

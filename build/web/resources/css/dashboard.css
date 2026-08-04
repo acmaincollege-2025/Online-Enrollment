@@ -1,0 +1,83 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 16, 2026, 8:24:44 PM
+    Author     : hrkas
+*/
+.dashboard-body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f6f9;
+}
+
+.topbar {
+    background: #0b3d91;
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.system-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.logout-btn {
+    background: #dc3545 !important;
+    border: none !important;
+}
+
+.sidebar {
+    width: 220px;
+    background: #1f2d3d;
+    position: fixed;
+    top: 60px;
+    bottom: 0;
+    padding-top: 20px;
+}
+
+.menu-item {
+    display: block;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    background: #34495e;
+}
+
+.main-content {
+    margin-left: 220px;
+    padding: 30px;
+}
+
+.dashboard-grid {
+    display: flex;
+    gap: 20px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 25px;
+    width: 250px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: black;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 40px;
+}
+

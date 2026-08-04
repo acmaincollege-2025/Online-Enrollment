@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template/admin-layout.xhtml">
+
+        <ui:define name="content">
+
+            <h:form id="carouselForm" enctype="multipart/form-data">
+
+                <p:growl id="messages" showDetail="true"/>
+
+                <!-- 📸 Upload Panel -->
+                <p:panel header="📸 Carousel Image Upload" styleClass="card">
+
+                    <p:fileUpload
+                        mode="advanced"
+                        auto="true"
+                        dragDropSupport="true"
+                        allowTypes="/(\.|\/)(jpg|jpeg|png|gif)$/"
+                        listener="#{carouselUploadBean.handleFileUpload}"
+                        update="messages imageGrid"/>
+
+                    <br/><br/>
+
+                    <p:selectBooleanCheckbox value="#{carouselUploadBean.randomMode}">
+                        <p:ajax/>
+                    </p:selectBooleanCheckbox>
+                    <h:outputText value=" 🔀 Randomize Carousel Images"/>
+
+                </p:panel>
+
+                <!-- 🖼 Image Gallery -->
+                <p:panel header="🖼 Uploaded Images" styleClass="card">
+
+                    <p:dataGrid id="imageGrid"
+                                value="#{carouselUploadBean.imageList}"
+                                var="img"
+                                columns="4"
+                                paginator="true"
+                                rows="8">
+
+                        <p:panel style="text-align:center; position:relative;">
+
+                            <!-- 🗑 Delete Overlay Button -->
+                            <p:commandButton
+                                value="🗑"
+                                title="Delete image"
+                                style="
+                                position:absolute;
+                                top:5px;
+                                right:5px;
+                                border-radius:50%;
+                                background:#e74c3c;
+                                color:white;
+                                border:none;
+                                width:32px;
+                                height:32px;"
+                                actionListener="#{carouselUploadBean.prepareDelete(img)}"
+                                process="@this"
+                                oncomplete="PF('deleteDlg').show()" />
+
+                            <!-- Image -->
+                            <p:graphicImage value="/resources/images/#{img}"
+                                            style="
+                                            width:100%;
+                                            height:140px;
+                                            object-fit:cover;
+                                            border-radius:6px;" />
+
+                            <br/>
+
+                            <!-- Filename -->
+                            <h:outputText value="#{img}"
+                                          style="font-size:11px;color:#555;word-break:break-all;"/>
+
+                        </p:panel>
+
+                    </p:dataGrid>
+
+                </p:panel>
+
+                <!-- ❓ Confirm Delete Dialog -->
+                <p:confirmDialog
+                    widgetVar="deleteDlg"
+                    header="❗ Confirm Delete"
+                    message="Are you sure you want to delete this image?"
+                    severity="warn"
+                    appendTo="@(body)">
+
+                    <p:commandButton
+                        value="✅ Yes, Delete"
+                        action="#{carouselUploadBean.deleteImage}"
+                        update="messages imageGrid"
+                        oncomplete="PF('deleteDlg').hide()" />
+
+                    <p:commandButton
+                        value="❌ Cancel"
+                        type="button"
+                        onclick="PF('deleteDlg').hide()" />
+
+                </p:confirmDialog>
+
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+</html>

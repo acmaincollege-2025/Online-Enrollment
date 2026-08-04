@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template/admin-layout.xhtml">
+
+        <ui:define name="content">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <h1>📧 Email Settings</h1>
+                <p>Configure SMTP settings used for system notifications.</p>
+            </div>
+
+            <!-- SETTINGS CARD -->
+            <div class="card">
+
+                <h:form id="emailSettingsForm">
+
+                    <p:messages id="msg" closable="true" />
+
+                    <p:panelGrid columns="2"
+                                 columnClasses="label,value"
+                                 style="width:100%">
+
+                        <h:outputLabel value="SMTP Host:" />
+                        <p:inputText value="#{emailSettingsBean.settings.smtpHost}"
+                                     style="width:100%" />
+
+                        <h:outputLabel value="SMTP Port:" />
+                        <p:inputText value="#{emailSettingsBean.settings.smtpPort}"
+                                     style="width:100%" />
+
+                        <h:outputLabel value="Username:" />
+                        <p:inputText value="#{emailSettingsBean.settings.id}"
+                                     style="width:100%" />
+
+                        <h:outputLabel value="Password:" />
+                        <p:password value="#{emailSettingsBean.settings.senderPassword}"
+                                    style="width:100%" />
+
+                        <h:outputLabel value="From Email:" />
+                        <p:inputText value="#{emailSettingsBean.settings.senderEmail}"
+                                     style="width:100%" />
+
+
+
+                    </p:panelGrid>
+
+                    <br/>
+                    <p:commandButton value="Send Test Email"
+                                     icon="pi pi-envelope"
+                                     styleClass="ui-button-secondary"
+                                     action="#{emailSettingsBean.sendTestEmail}"
+                                     update="msg" />
+
+                    <p:commandButton value="💾 Save Settings"
+                                     action="#{emailSettingsBean.save}"
+                                     update="@form"
+                                     styleClass="ui-button-success" />
+
+                </h:form>
+
+            </div>
+
+        </ui:define>
+
+    </ui:composition>
+</html>

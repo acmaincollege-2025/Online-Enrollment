@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="./../template/cashier-layout.xhtml">
+
+        <!-- SIDEBAR (optional) -->
+        <ui:define name="sidebar">
+            <!-- Keep empty or add cashier menu -->
+        </ui:define>
+
+        <!-- MAIN CONTENT -->
+        <ui:define name="content">
+
+            <style>
+                .receipt-card {
+                    width: 750px;
+                    margin: 30px auto;
+                    padding: 30px;
+                    background: #ffffff;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                .receipt-title {
+                    text-align: center;
+                    font-size: 26px;
+                    color: #800000;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                }
+                .receipt-row {
+                    display: flex;
+                    padding: 8px 0;
+                    border-bottom: 1px solid #eee;
+                }
+                .receipt-label {
+                    width: 230px;
+                    font-weight: bold;
+                    color: #444;
+                }
+                .receipt-value {
+                    flex: 1;
+                }
+                .receipt-actions {
+                    margin-top: 30px;
+                    text-align: center;
+                }
+                .btn-print {
+                    padding: 8px 18px;
+                    font-size: 14px;
+                    background: #860000;
+                    color: #fff;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+                .btn-print:hover {
+                    background: #a00000;
+                }
+
+                /* --- PRINT STYLING --- */
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    .receipt-card, .receipt-card * {
+                        visibility: visible;
+                    }
+                    .receipt-card {
+                        box-shadow: none !important;
+                        width: 100% !important;
+                        margin: 0;
+                    }
+                    .receipt-actions {
+                        display: none;
+                    }
+                }
+            </style>
+
+            <div class="receipt-card">
+
+                <div class="receipt-title">Official Payment Receipt</div>
+
+                <h:panelGroup rendered="#{not empty paymentBean.receiptData}">
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Student No:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.studentNo}" />
+                        </div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Student Name:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.studentName}" />
+                        </div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Program:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.programName}" />
+                        </div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Enrollment ID:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.enrollmentId}" />
+                        </div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Payment Type:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.paymentType}" />
+                        </div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Reference No.:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.paymentReferenceNumber}" />
+                        </div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Amount Paid:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.amountPaid}">
+                                <f:convertNumber type="currency" currencySymbol="₱" />
+                            </h:outputText>
+                        </div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <div class="receipt-label">Payment Date:</div>
+                        <div class="receipt-value">
+                            <h:outputText value="#{paymentBean.receiptData.paymentDate}">
+                                <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                            </h:outputText>
+                        </div>
+                    </div>
+
+                    <div class="receipt-actions">
+                        <button type="button" class="btn-print" onclick="window.print();">Print Receipt</button>
+
+                        <h:link value="Back to Cashier Dashboard"
+                                outcome="cashier"
+                                style="margin-left:20px; color:#333; text-decoration:none; font-weight:bold;" />
+                    </div>
+
+                </h:panelGroup>
+
+                <h:form>
+                    <p:commandLink value="Download PDF Receipt"
+                                   actionListener="#{paymentBean.downloadPDF}"
+                                   ajax="false"
+                                   style="display:block; text-align:center; margin-top:20px; color:#800000; font-weight:bold;" />
+                </h:form>
+
+            </div>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

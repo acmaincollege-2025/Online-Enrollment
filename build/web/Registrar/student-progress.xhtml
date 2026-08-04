@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="/template/registrar-layout.xhtml">>
+
+    <ui:define name="content">
+        <style>
+            .ui-panelgrid {
+                margin-left: 0 !important;
+            }
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding: 20px;
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,.08);
+            }
+
+            .page-title {
+                margin: 0;
+                color: #2c3e50;
+                font-size: 24px;
+                font-weight: 600;
+            }
+
+            .page-subtitle {
+                color: #7f8c8d;
+                font-size: 14px;
+            }
+
+            .search-panel {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 10px rgba(0,0,0,.08);
+            }
+
+            .search-grid {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .table-panel {
+                background: white;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,.08);
+            }
+
+            .student-info {
+                margin-bottom: 20px;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 8px;
+            }
+
+            .student-info h3 {
+                margin: 0 0 10px 0;
+                color: #2c3e50;
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .info-item {
+                font-size: 14px;
+            }
+
+            .label {
+                font-weight: 600;
+                color: #34495e;
+            }
+
+            .completed {
+                color: #27ae60;
+                font-weight: bold;
+            }
+
+            .enrolled {
+                color: #3498db;
+                font-weight: bold;
+            }
+
+            .failed {
+                color: #e74c3c;
+                font-weight: bold;
+            }
+
+            .dropped {
+                color: #f39c12;
+                font-weight: bold;
+            }
+
+        </style>
+        <h:form id="progressForm"> 
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">
+                        📚 Student Progress Monitoring
+                    </h2>
+
+                    <div class="page-subtitle">
+                        View student's academic progress and completed subjects
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH PANEL -->
+            <div class="search-panel">
+
+                <h3 style="margin-top:0">
+                    Search Student
+                </h3>
+
+                <div class="search-grid">
+
+                    <p:inputText
+                        value="#{studentProgressBean.searchKeyword}"
+                        placeholder="Student No or Student Name"
+                        style="width:350px"/>
+
+                    <p:commandButton
+                        value="🔍Search"
+                        action="#{studentProgressBean.searchStudents}"
+                        update="studentTable"/>
+
+                    <p:commandButton
+                        value="🔄 Refresh"
+                        process="@this"
+                        update="@form"/>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDENT TABLE -->
+            <div class="table-panel">
+
+                <p:dataTable id="studentTable"
+                             value="#{studentProgressBean.searchResults}"
+                             var="student"
+                             paginator="true"
+                             rows="10"
+                             rowKey="#{student.sid}"
+                             selectionMode="single"
+                             selection="#{studentProgressBean.selectedStudent}"
+                             emptyMessage="No students found">
+
+                    <p:ajax event="rowSelect"
+                            listener="#{studentProgressBean.viewProgress}"
+                            update="@form"
+                            oncomplete="PF('progressDialog').show()" />
+
+                    <p:column headerText="Student No">
+                        #{student.studno}
+                    </p:column>
+
+                    <p:column headerText="Student Name">
+                        #{student.fullName}
+                    </p:column>
+
+                    <p:column headerText="Program">
+                        #{student.program_enrolled}
+                    </p:column>
+
+                    <p:column headerText="Year Level">
+                        #{student.year_level}
+                    </p:column>
+
+                    <p:column headerText="Status">
+                        #{student.remarks}
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+            <!-- DIALOG -->
+            <p:dialog id="progressDialog"
+                      widgetVar="progressDialog"
+                      header="Student Academic Progress"
+                      modal="true"
+                      width="1100"
+                      resizable="false">
+
+                <p:outputPanel id="progressContent">
+
+                    <!-- Prevent NPE -->
+                    <h:panelGroup rendered="#{not empty studentProgressBean.selectedStudent}">
+
+                        <!-- STUDENT INFO -->
+                        <div class="student-info">
+
+                            <h3>
+                                #{studentProgressBean.selectedStudent.fullName}
+                            </h3>
+
+                            <div class="info-grid">
+
+                                <div class="info-item">
+                                    <span class="label">Student No:</span>
+                                    #{studentProgressBean.selectedStudent.studno}
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="label">Program:</span>
+                                    #{studentProgressBean.selectedStudent.program_enrolled}
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="label">Year Level:</span>
+                                    #{studentProgressBean.selectedStudent.year_level}
+                                </div>
+
+                                <div class="info-item">
+                                    <span class="label">Status:</span>
+                                    #{studentProgressBean.selectedStudent.remarks}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- SUBJECT HISTORY -->
+                        <p:dataTable value="#{studentProgressBean.courseProgressList}"
+                                     var="course"
+                                     paginator="true"
+                                     rows="15"
+                                     emptyMessage="No academic records found">
+
+                            <p:column headerText="Course Code">
+                                #{course.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Course Title">
+                                #{course.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{course.units}
+                            </p:column>
+
+                            <p:column headerText="Year Level">
+                                #{course.yearLevel}
+                            </p:column>
+
+                            <p:column headerText="Semester">
+                                #{course.semester}
+                            </p:column>
+
+                            <p:column headerText="Status">
+                                #{course.status}
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </h:panelGroup>
+
+                </p:outputPanel>
+
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

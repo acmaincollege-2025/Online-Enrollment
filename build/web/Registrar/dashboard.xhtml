@@ -1,0 +1,174 @@
+<ui:composition template="/template/registrar-layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <h:outputStylesheet>
+            /* QUICK ACCESS */
+            .quick-access-section {
+            margin-top: 30px;
+            }
+
+            .section-title {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: 600;
+            }
+
+            .quick-access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            }
+
+            .module-card {
+            display: block;
+            text-decoration: none;
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            transition: all .3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+
+            .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            border-color: #3498db;
+            }
+
+            .module-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            }
+
+            .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            }
+
+            .module-desc {
+            font-size: 13px;
+            color: #7f8c8d;
+            line-height: 1.4;
+            }
+        </h:outputStylesheet>
+        <h2>📊 Enrollment Statistics</h2>
+        <p class="text-muted">Filter and analyze enrollment data</p>
+
+        <h:form id="statsForm">
+
+            <p:messages id="msgs" showDetail="true" closable="true" />
+            <!-- SUMMARY STAT BOXES -->
+            <div class="stat-grid">
+
+                <div class="stat-box">
+                    <div class="stat-header">
+                        <span class="stat-icon">👨‍🎓</span>
+                        <span>Total Enrolled</span>
+                    </div>
+                    <div class="stat-value">
+                        #{dashboardBean.totalEnrolled}
+                    </div>
+                    <div class="stat-desc">
+                        Active enrolled students
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-header">
+                        <span class="stat-icon">📚</span>
+                        <span>Programs</span>
+                    </div>
+                    <div class="stat-value">
+                        #{dashboardBean.totalPrograms}
+                    </div>
+                    <div class="stat-desc">
+                        Academic programs offered
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-header">
+                        <span class="stat-icon">📖</span>
+                        <span>Courses</span>
+                    </div>
+                    <div class="stat-value">
+                        #{dashboardBean.totalCourses}
+                    </div>
+                    <div class="stat-desc">
+                        Total available courses
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- QUICK ACCESS MODULES -->
+            <div class="quick-access-section">
+
+                <h3 class="section-title">Quick Access</h3>
+
+                <div class="quick-access-grid">
+
+                    <h:link outcome="enrollment" styleClass="module-card">
+                        <div class="module-icon">📝</div>
+                        <div class="module-title">Admission / Enrollment</div>
+                        <div class="module-desc">Manage student applications and enrollment</div>
+                    </h:link>
+
+                    <h:link outcome="enrollment-period" styleClass="module-card">
+                        <div class="module-icon">📅</div>
+                        <div class="module-title">Enrollment Period</div>
+                        <div class="module-desc">Configure enrollment schedules</div>
+                    </h:link>
+
+                    <h:link outcome="student-management" styleClass="module-card">
+                        <div class="module-icon">👨‍🎓</div>
+                        <div class="module-title">Manage Students</div>
+                        <div class="module-desc">Student information management</div>
+                    </h:link>
+
+                    <h:link outcome="student-list" styleClass="module-card">
+                        <div class="module-icon">📋</div>
+                        <div class="module-title">Student List</div>
+                        <div class="module-desc">View all registered students</div>
+                    </h:link>
+
+                    <h:link outcome="course" styleClass="module-card">
+                        <div class="module-icon">📚</div>
+                        <div class="module-title">Course Setup</div>
+                        <div class="module-desc">Manage curriculum and courses</div>
+                    </h:link>
+
+                    <h:link outcome="/Registrar/college-programs.xhtml"
+                            styleClass="module-card">
+                        <div class="module-icon">🎓</div>
+                        <div class="module-title">College Programs</div>
+                        <div class="module-desc">Manage academic programs</div>
+                    </h:link>
+
+                    <h:link outcome="approval" styleClass="module-card">
+                        <div class="module-icon">✅</div>
+                        <div class="module-title">Registrar Approval</div>
+                        <div class="module-desc">Review enrollment requests</div>
+                    </h:link>
+
+                    <h:link outcome="student-progress" styleClass="module-card">
+                        <div class="module-icon">📈</div>
+                        <div class="module-title">Student Progress</div>
+                        <div class="module-desc">Track academic performance</div>
+                    </h:link>
+
+                </div>
+
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

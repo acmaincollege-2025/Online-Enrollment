@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+
+<ui:composition template="/template/admin-layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+
+        <h:outputStylesheet>
+            .dashboard-header {
+            background: linear-gradient(135deg,#1e3c72,#2a5298);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            }
+
+            .dashboard-header h2 {
+            margin: 0;
+            font-size: 28px;
+            }
+
+            .dashboard-header p {
+            margin-top: 8px;
+            opacity: .9;
+            }
+
+            .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            }
+
+            .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+            }
+
+            .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1e3c72;
+            }
+
+            .stat-label {
+            color: #666;
+            margin-top: 5px;
+            }
+
+            .section-header {
+            margin-bottom: 15px;
+            }
+
+            .section-header h3 {
+            color: #1e3c72;
+            margin: 0;
+            }
+
+            .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+            gap: 20px;
+            }
+
+            .module-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            padding: 22px;
+            background: white;
+            border-radius: 12px;
+
+            text-decoration: none !important;
+            color: inherit !important;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+
+            transition: all .3s ease;
+            }
+
+            .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,.15);
+            }
+
+            .module-icon {
+            font-size: 42px;
+            }
+
+            .module-content h4 {
+            margin: 0 0 6px 0;
+            color: #1e3c72;
+            }
+
+            .module-content p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+            }
+        </h:outputStylesheet>
+
+        <h:form>
+
+            <!-- DASHBOARD HEADER -->
+            <div class="dashboard-header">
+                <h2>System Administrator Dashboard</h2>
+                <p>
+                    Manage system configuration, users, security, and platform settings
+                </p>
+            </div>
+
+            <!-- QUICK STATS -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-number">
+                        #{adminDashboardBean.totalUsers}
+                    </div>
+                    <div class="stat-label">
+                        Total Users
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">
+                        #{adminDashboardBean.totalStudents}
+                    </div>
+                    <div class="stat-label">
+                        Student Accounts
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">
+                        #{adminDashboardBean.totalStaff}
+                    </div>
+                    <div class="stat-label">
+                        Staff Accounts
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">
+                        #{adminDashboardBean.totalAuditLogs}
+                    </div>
+                    <div class="stat-label">
+                        Audit Records
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MODULE SECTION -->
+            <div class="section-header">
+                <h3>System Administration Modules</h3>
+            </div>
+
+            <div class="module-grid">
+
+                <!-- USER MANAGEMENT -->
+                <h:link outcome="user-management" styleClass="module-card">
+                    <div class="module-icon">👥</div>
+
+                    <div class="module-content">
+                        <h4>User Management</h4>
+                        <p>
+                            Manage administrators, admission,
+                            registrar, cashier and dean accounts.
+                        </p>
+                    </div>
+                </h:link>
+
+                <!-- STUDENT ACCOUNTS -->
+                <h:link outcome="student-accountst" styleClass="module-card">
+                    <div class="module-icon">🎓</div>
+
+                    <div class="module-content">
+                        <h4>Student Accounts</h4>
+                        <p>
+                            Manage student credentials and
+                            account access.
+                        </p>
+                    </div>
+                </h:link>
+
+                <!-- EMAIL SETTINGS -->
+                <h:link outcome="email-settings" styleClass="module-card">
+                    <div class="module-icon">✉️</div>
+
+                    <div class="module-content">
+                        <h4>Email Settings</h4>
+                        <p>
+                            Configure SMTP server and
+                            notification settings.
+                        </p>
+                    </div>
+                </h:link>
+
+                <!-- CAROUSEL -->
+                <h:link outcome="carousel" styleClass="module-card">
+                    <div class="module-icon">🖼️</div>
+
+                    <div class="module-content">
+                        <h4>Carousel Management</h4>
+                        <p>
+                            Upload and maintain homepage
+                            banner images.
+                        </p>
+                    </div>
+                </h:link>
+
+                <!-- AUDIT LOG -->
+                <h:link outcome="audit" styleClass="module-card">
+                    <div class="module-icon">🛡️</div>
+
+                    <div class="module-content">
+                        <h4>Audit Logs</h4>
+                        <p>
+                            Review system activities and
+                            user actions.
+                        </p>
+                    </div>
+                </h:link>
+
+                <!-- PROFILE -->
+                <h:link styleClass="module-card"
+                        onclick="PF('userProfileDialog').show();return false;">
+
+                    <div class="module-icon">👤</div>
+
+                    <div class="module-content">
+                        <h4>My Profile</h4>
+                        <p>
+                            Update account information
+                            and security settings.
+                        </p>
+                    </div>
+                </h:link>
+
+            </div>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Student Portal</title>
+
+        <h:outputStylesheet>
+            .topbar {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            }
+
+            .logo {
+            font-size: 22px;
+            font-weight: bold;
+            }
+
+            .user-info {
+            float:right;
+            }
+
+            .content {
+            padding:20px;
+            }
+
+            .footer {
+            background:#f4f4f4;
+            padding:10px;
+            text-align:center;
+            margin-top:20px;
+            }
+        </h:outputStylesheet>
+    </h:head>
+
+    <h:body>
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+
+            <span class="logo">
+                Student Portal
+            </span>
+
+            <span class="user-info">
+                Welcome,
+                #{studentLoginBean.loggedInStudent.fullName}
+            </span>
+
+        </div>
+
+        <!-- MENU -->
+        <h:form>
+
+            <p:menubar>
+
+                <p:menuitem value="Dashboard"
+                            outcome="/student/dashboard"/>
+
+                <p:menuitem value="Enroll"
+                            outcome="/student/enrollment"/>
+
+                <p:menuitem value="My Enrollments"
+                            outcome="/student/enrollment-history"/>
+
+                <p:menuitem value="Assessment"
+                            outcome="/student/assessment"/>
+
+                <p:menuitem value="Payments"
+                            outcome="/student/payment-history"/>
+
+                <p:menuitem value="Profile"
+                            outcome="/student/profile"/>
+
+                <p:menuitem value="Logout"
+                            action="#{loginBean.logout}"
+                            icon="ui-icon-power"/>
+
+            </p:menubar>
+
+        </h:form>
+
+        <!-- PAGE CONTENT -->
+        <div class="content">
+
+            <ui:insert name="content"/>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Online Enrollment System
+        </div>
+
+    </h:body>
+
+</html>

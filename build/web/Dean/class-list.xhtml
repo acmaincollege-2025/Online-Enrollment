@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../template/layout-dean.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <ui:define name="content">
+        <style>
+
+            .filter-card {
+                border-radius: 6px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+
+            .filter-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+            }
+
+            .filter-item label {
+                font-size: 16px;
+                font-weight: 600;
+                color: #555;
+            }
+
+            .filter-grid {
+                width: 100%;
+            }
+
+           
+            label {
+                font-weight: bold;
+                font-size: 16px;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .ui-selectonemenu {
+                width: 80% !important;
+            }
+
+            .col {
+                width: 50%;
+                vertical-align: top;
+            }
+        </style>
+        <h:form id="form">
+
+            <!-- FILTER CARD -->
+            <p:panel styleClass="card">
+
+                <f:facet name="header">
+                    <h:outputText value="Class List Report Generator"/>
+                </f:facet>
+
+                <!-- ROW 1 -->
+                <h:panelGrid columns="2" style="width:100%" columnClasses="col">
+
+                    <h:panelGroup>
+                        <label>Program</label><br/>
+                        <p:selectOneMenu value="#{classListBean.programId}" style="width:100%">
+                            <f:selectItem itemLabel="Select Program" itemValue="0"/>
+                            <f:selectItems value="#{programBean.programList}"
+                                           var="p"
+                                           itemLabel="#{p.program_name}"
+                                           itemValue="#{p.program_id}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <label>Semester</label><br/>
+                        <p:selectOneMenu value="#{classListBean.semester}" style="width:80%">
+                            <f:selectItem itemLabel="1st Semester" itemValue="1st"/>
+                            <f:selectItem itemLabel="2nd Semester" itemValue="2nd"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+
+                </h:panelGrid>
+
+
+                <!-- ROW 2 -->
+                <h:panelGrid columns="2" style="width:100%; margin-top:10px" columnClasses="col">
+
+                    <h:panelGroup>
+                        <label>Year Level</label><br/>
+                        <p:selectOneMenu value="#{classListBean.yearLevel}" style="width:80%">
+                            <f:selectItem itemLabel="1st Year" itemValue="1"/>
+                            <f:selectItem itemLabel="2nd Year" itemValue="2"/>
+                            <f:selectItem itemLabel="3rd Year" itemValue="3"/>
+                            <f:selectItem itemLabel="4th Year" itemValue="4"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <label>Academic Year</label><br/>
+                        <p:selectOneMenu value="#{classListBean.academicYear}" style="width:80%">
+                            <f:selectItem itemLabel="Select Year" itemValue="" />
+                            <f:selectItems value="#{classListBean.academicYearList}"
+                                           var="ay"
+                                           itemLabel="#{ay}"
+                                           itemValue="#{ay}" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+
+                </h:panelGrid>
+
+                <!-- ACTION BUTTON -->
+                <div style="margin-top:15px">
+                    <p:commandButton value="Search Subjects"
+                                     update="tblSubjects"
+                                     actionListener="#{classListBean.loadSubjects}" />
+                </div>
+                <div>
+                    <p:dataTable id="tblSubjects"
+                                 value="#{classListBean.subjectList}"
+                                 var="subject"
+                                 selectionMode="single"
+                                 selection="#{classListBean.selectedSubject}"
+                                 rowKey="#{subject.courseId}">
+
+                        <p:column headerText="Code">
+                            #{subject.courseCode}
+                        </p:column>
+
+                        <p:column headerText="Title">
+                            #{subject.courseTitle}
+                        </p:column>
+
+                        <p:column headerText="Units">
+                            #{subject.units}
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                </div>
+                <!-- ACTION BUTTONS -->
+                <div style="margin-top:15px">
+
+                    <p:commandButton value="View Class List"
+                                     update="classListDlg"
+                                     actionListener="#{classListBean.loadClassListBySubject}"
+                                     oncomplete="PF('classListDlg').show();" />
+
+                </div>
+
+            </p:panel>
+
+            <!-- REPORT SUMMARY -->
+            <p:dialog id="classListDlg"
+                      widgetVar="classListDlg"
+                      modal="true"
+                      width="900"
+                      header="Class List">
+
+                <h:panelGrid columns="1">
+
+                    <h:outputText value="Academic Year: #{classListBean.academicYear}" />
+
+                    <h:outputText value="Semester: #{classListBean.semester}" />
+
+                    <h:outputText
+                        value="Subject: #{classListBean.selectedSubject.courseCode}
+                        - #{classListBean.selectedSubject.courseTitle}" />
+
+                </h:panelGrid>
+
+                <br/>
+
+                <p:dataTable value="#{classListBean.classList}"
+                             var="student">
+
+                    <p:column headerText="#">
+                        #{classListBean.classList.indexOf(student)+1}
+                    </p:column>
+
+                    <p:column headerText="Student Number">
+                        #{student.studentNumber}
+                    </p:column>
+
+                    <p:column headerText="Student Name">
+                        #{student.studentName}
+                    </p:column>
+
+                </p:dataTable>
+
+                <f:facet name="footer">
+
+                    <p:commandButton value="Export PDF" ajax="false"
+                                     actionListener="#{classListBean.generatePDFReport}"
+                                     onclick="this.form.target = '_blank'" />
+
+                    <p:commandButton value="Close"
+                                     icon="pi pi-times"
+                                     type="button"
+                                     onclick="PF('classListDlg').hide();" />
+
+                </f:facet>
+
+            </p:dialog>
+
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

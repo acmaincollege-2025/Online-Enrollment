@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <div class="sidebar">
+
+        <div class="sidebar-header">
+            Cashier Panel
+        </div>
+
+        <h:link outcome="/Cashier/dashboard"
+                value="🏠 Dashboard"
+                styleClass="menu-item"/>
+
+        <h:link outcome="/Cashier/cashier-assessment"
+                value="📟 Asses Student"
+                styleClass="menu-item"/>
+        
+        <h:link outcome="/Cashier/cashier-pos"
+                value="💵 Payments"
+                styleClass="menu-item"/>
+        
+        <h:link outcome="/Cashier/cashier-pending"
+                value="📋 Pending Payments"
+                styleClass="menu-item"/>
+
+        <h:link outcome="/Cashier/cashier-payment-history"
+                value="📊 Payment History"
+                styleClass="menu-item"/>
+
+        <h:link outcome="/Cashier/fee-config"
+                value="⚙ Fee Configuration"
+                styleClass="menu-item"/>
+        
+        <h:link outcome="/Cashier/payment-item"
+                value="⚙ Payment Item Settings"
+                styleClass="menu-item"/>
+        
+       
+
+        <ui:include src="/common/user-profile-dialog.xhtml"/>
+        <h:form>
+            <p:commandLink value="👤 Profile"
+                           onclick="PF('userProfileDialog').show(); return false;" />
+        </h:form>
+
+        <a href="#{request.contextPath}/logout"
+           class="menu-item"
+           onclick="return confirm('Are you sure you want to logout?');">
+            🚪 Logout
+        </a>
+
+
+    </div>
+
+</ui:composition>

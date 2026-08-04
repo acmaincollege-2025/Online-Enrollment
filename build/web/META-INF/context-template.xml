@@ -1,0 +1,14 @@
+<Context>
+    <Resource
+        name="jdbc/EnrollmentDB"
+        auth="Container"
+        type="javax.sql.DataSource"
+        maxTotal="100"
+        maxIdle="30"
+        maxWaitMillis="10000"
+        username="${DB_USER}"
+        password="${DB_PASS}"
+        driverClassName="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Manila"
+    />
+</Context>

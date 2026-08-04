@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<ui:composition template="/template/layout-cashier.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Fee Configuration
+    </ui:define>
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-panelgrid.showcase-text-align-center .ui-grid-responsive .ui-panelgrid-cell {
+                text-align: center;
+            }
+
+            .customPanelGrid .ui-panelgrid-content {
+                align-items: center;
+                .badge-warning {
+                    background-color: orange;
+                    color: white;
+                    padding: 3px 8px;
+                    border-radius: 5px;
+                }
+
+                .badge-success {
+                    background-color: green;
+                    color: white;
+                    padding: 3px 8px;
+                    border-radius: 5px;
+                }
+            }
+        </style>
+        <h:form id="form">
+
+            <!-- 🔷 PAGE TITLE -->
+            <h2>Fee Configuration</h2>
+
+            <!-- ========================= -->
+            <!-- 🔹 TUITION SECTION -->
+            <!-- ========================= -->
+            <p:panel header="Tuition Fee Setup" style="margin-bottom:20px;">
+
+                <h:panelGrid columns="3" cellpadding="10">
+
+                    <h:outputLabel value="Tuition per Unit:" />
+
+                    <p:inputText value="#{feeConfigBean.tuitionRate}" 
+                                 required="true"
+                                 label="Tuition Rate"/>
+
+                    <p:commandButton value="Save"
+                                     action="#{feeConfigBean.saveTuition}"
+                                     update="@form"/>
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <!-- ========================= -->
+            <!-- 🔹 FIXED FEES SECTION -->
+            <!-- ========================= -->
+            <p:panel header="Fixed Fees">
+
+                <!-- TOP ACTIONS -->
+                <p:commandButton value="➕ Add Fee"
+                                 style="margin-bottom:10px"
+                                 action="#{feeConfigBean.openNew}"
+                                 update=":dialogForm"
+                                 oncomplete="PF('feeDialog').show()" />
+
+                <p:dataTable id="feeTable"
+                             value="#{feeConfigBean.feeList}"
+                             var="fee"
+                             rowKey="#{fee.feeId}"
+                             selection="#{feeConfigBean.selectedFee}"
+                             selectionMode="single"
+                             paginator="true"
+                             rows="10"
+                             emptyMessage="No fees configured">
+
+                    <p:column selectionMode="single"
+                              style="width:40px;text-align:center"/>
+
+                    <p:column headerText="Fee Name">
+                        #{fee.feeName}
+                    </p:column>
+
+                    <p:column headerText="Amount">
+                        <h:outputText value="#{fee.amount}">
+                            <f:convertNumber type="currency"
+                                             currencySymbol="₱"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Status">
+                        <h:outputText value="#{fee.active ? 'Active' : 'Inactive'}"
+                                      style="font-weight:bold;
+                                      color:#{fee.active ? 'green' : 'red'}"/>
+                    </p:column>
+
+                </p:dataTable>
+
+                <!-- ACTION BUTTONS -->
+                <p:separator/>
+
+                <p:commandButton value="✏️ Edit"
+                                 disabled="#{empty feeConfigBean.selectFee}"
+                                 action="#{feeConfigBean.prepareEdit}"
+                                 update=":dialogForm"
+                                 oncomplete="PF('feeDialog').show()" />
+
+                <p:commandButton value="🔄 Toggle Status"
+                                 disabled="#{empty feeConfigBean.selectedFee}"
+                                 action="#{feeConfigBean.toggleSelectedStatus}"
+                                 update="@form" />
+
+            </p:panel>
+
+        </h:form>
+
+        <!-- ========================= -->
+        <!-- 🔹 DIALOG FORM -->
+        <!-- ========================= -->
+        <h:form id="dialogForm">
+
+            <p:dialog header="Fee Entry"
+                      widgetVar="feeDialog"
+                      modal="true"
+                      closable="true"
+                      resizable="false"
+                      width="400">
+
+                <h:panelGrid columns="2" cellpadding="10">
+
+                    <h:outputLabel value="Fee Name:" />
+                    <p:inputText value="#{feeConfigBean.selectedFee.feeName}"
+                                 required="true"
+                                 label="Fee Name"/>
+
+                    <h:outputLabel value="Amount:" />
+                    <p:inputText value="#{feeConfigBean.selectedFee.amount}"
+                                 required="true"
+                                 label="Amount"/>
+
+                </h:panelGrid>
+
+                <f:facet name="footer">
+
+                    <p:commandButton value="Save"
+                                     action="#{feeConfigBean.saveFee}"
+                                     update=":form"
+                                     oncomplete="PF('feeDialog').hide()"/>
+
+                    <p:commandButton value="Cancel"
+                                     onclick="PF('feeDialog').hide(); return false;"/>
+
+                </f:facet>
+
+            </p:dialog>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

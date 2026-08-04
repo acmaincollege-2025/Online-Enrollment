@@ -1,0 +1,685 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout_student.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <h:outputStylesheet>
+            .enrollment-hero {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.08);
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            }
+
+            .hero-left h2 {
+            margin: 0 0 10px;
+            }
+
+            .hero-meta span {
+            margin-right: 20px;
+            font-weight: 600;
+            }
+
+            .dashboard-cards {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            }
+
+            .dashboard-card {
+            flex: 1;
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,.08);
+            }
+
+            .dashboard-card i {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 10px;
+            }
+
+            .card-title {
+            color: #666;
+            margin-bottom: 10px;
+            }
+
+            .card-value {
+            font-size: 22px;
+            font-weight: bold;
+            }
+
+            .status-open {
+            color: #2e7d32;
+            font-weight: bold;
+            }
+
+            .status-closed {
+            color: #c62828;
+            font-weight: bold;
+            }
+
+            .enroll-btn {
+            min-width: 180px;
+            }
+
+            .filter-card {
+            margin-bottom: 15px;
+            }
+
+            .summary-card {
+            margin-top: 15px;
+            }
+
+            .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            }
+
+            .empty-state {
+            text-align: center;
+            padding: 40px;
+            }
+
+            .empty-content i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            }
+
+            .labelColumn {
+            width: 180px;
+            padding: 8px;
+            }
+
+            .valueColumn {
+            padding: 8px;
+            }
+        </h:outputStylesheet>
+        <h:form id="enrollmentForm">
+
+            
+            <p:messages id="msgs"
+                        showDetail="true"
+                        closable="true"/>
+
+            <!-- Enrollment Period -->
+            <div class="enrollment-hero">
+
+                <div class="hero-left">
+
+                    <h2>
+                        <i class="pi pi-book"></i>
+                        Student Enrollment
+                    </h2>
+
+                    <div class="hero-meta">
+
+                        <span>
+                            AY:
+                            #{enrollmentPeriodBean.currentPeriod.academicYear}
+                        </span>
+
+                        <span>
+                            Semester:
+                            #{enrollmentPeriodBean.currentPeriod.semester}
+                        </span>
+
+                        <span class="#{enrollmentPeriodBean.enrollmentOpen ? 'status-open' : 'status-closed'}">
+
+                            #{enrollmentPeriodBean.enrollmentOpen ? 'OPEN' : 'CLOSED'}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-right">
+
+                    <p:commandButton
+                        value="Enroll Now"
+                        rendered="#{empty studentPortalBean.currentEnrollment}"
+                        disabled="#{!enrollmentPeriodBean.enrollmentOpen}"
+                        onclick="PF('studentTabs').select(1);return false;"
+                        styleClass="ui-button-success enroll-btn"/>
+
+                </div>
+
+            </div>
+
+            <div class="dashboard-cards">
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-book"></i>
+
+                    <span>Total Units</span>
+
+                    <h2>
+
+                        #{empty studentPortalBean.assessment ?
+                          0 :
+                          studentPortalBean.assessment.totalUnits}
+
+                    </h2>
+
+                </div>
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-wallet"></i>
+
+                    <span>Total Assessment</span>
+
+                    <h2>
+
+                        <h:outputText
+                            value="#{empty studentPortalBean.assessment ? 0 : studentPortalBean.assessment.grandTotal}">
+
+                            <f:convertNumber
+                                type="currency"
+                                currencySymbol="₱"/>
+
+                        </h:outputText>
+
+                    </h2>
+
+                </div>
+
+                <div class="dashboard-card">
+
+                    <i class="pi pi-check-circle"></i>
+
+                    <span>Enrollment Status</span>
+
+                    <h2>
+
+                        #{empty studentPortalBean.currentEnrollment ?
+                          'Not Enrolled' :
+                          studentPortalBean.currentEnrollment.status}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <p:tabView id="studentTabs" widgetVar="studentTabs" dynamic="false">
+
+                <!-- ===================================================== -->
+                <!-- CURRENT ENROLLMENT STATUS -->
+                <!-- ===================================================== -->
+
+                <p:tab title="📋 Current Enrollment">
+
+                    <p:panel header="Current Enrollment Status"
+                             rendered="#{not empty studentPortalBean.currentEnrollment}">
+
+                        <h:panelGrid columns="2" cellpadding="6">
+
+                            <h:outputText value="Program:" />
+                            <h:outputText value="#{studentPortalBean.currentEnrollment.programName}" />
+
+                            <h:outputText value="Year Level:" />
+                            <h:outputText value="#{studentPortalBean.currentEnrollment.yearLevel}" />
+
+                            <h:outputText value="Academic Year:" />
+                            <h:outputText value="#{studentPortalBean.currentEnrollment.academic_year}" />
+
+                            <h:outputText value="Semester:" />
+                            <h:outputText value="#{studentPortalBean.currentEnrollment.semester}" />
+
+                            <h:outputText value="Status:" />
+                            <h:outputText value="#{studentPortalBean.currentEnrollment.status}" />
+
+                            <h:outputText value="Payment Status:" />
+                            <h:outputText value="#{studentPortalBean.currentEnrollment.payment_status}" />
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <!--SUBJECT ENROLLED -->
+                    <p:panel header="Currently Enrolled Subjects"
+                             rendered="#{not empty studentPortalBean.currentEnrolledCourses}"
+                             style="margin-top:15px">
+
+                        <p:dataTable value="#{studentPortalBean.currentEnrolledCourses}"
+                                     var="course">
+
+                            <p:column headerText="Code">
+                                #{course.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Description">
+                                #{course.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{course.units}
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+                    <!--ASSESSMENT SUMMARY -->
+                    <p:panel header="Assessment Summary"
+                             rendered="#{not empty studentPortalBean.assessment}"
+                             style="margin-top:15px">
+
+                        <h:panelGrid columns="2" cellpadding="6">
+
+                            <h:outputText value="Total Units:" />
+                            <h:outputText value="#{studentPortalBean.assessment.totalUnits}" />
+
+                            <h:outputText value="Total Assessment:" />
+                            <h:outputText value="#{studentPortalBean.assessment.grandTotal}">
+                                <f:convertNumber type="currency"
+                                                 currencySymbol="₱"/>
+                            </h:outputText>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <!--FEE BREAKDOWN -->
+                    <p:panel header="Fee Breakdown"
+                             rendered="#{not empty studentPortalBean.assessmentItems}"
+                             style="margin-top:15px">
+
+                        <p:dataTable value="#{studentPortalBean.assessmentItems}"
+                                     var="fee">
+
+                            <p:column headerText="Fee Description">
+                                #{fee.description}
+                            </p:column>
+
+                            <p:column headerText="Amount">
+
+                                <h:outputText value="#{fee.amount}">
+                                    <f:convertNumber type="currency"
+                                                     currencySymbol="₱"/>
+                                </h:outputText>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+                    <!--TOTAL FEE  -->
+                    <p:panel rendered="#{not empty studentPortalBean.assessment}"
+                             style="margin-top:10px">
+
+                        <div style="text-align:right;font-size:18px;font-weight:bold">
+
+                            TOTAL:
+
+                            <h:outputText value="#{studentPortalBean.assessment.grandTotal}">
+                                <f:convertNumber type="currency"
+                                                 currencySymbol="₱"/>
+                            </h:outputText>
+
+                        </div>
+
+                    </p:panel>
+
+                    <p:panel rendered="#{empty studentPortalBean.currentEnrollment}"
+                             styleClass="empty-state">
+
+                        <div class="empty-content">
+
+                            <i class="pi pi-info-circle"></i>
+
+                            <h3>No Current Enrollment</h3>
+
+                            <p>
+                                You are not enrolled for the current semester.
+                            </p>
+
+                            <br/>
+
+                            <p:commandButton
+                                value="Enroll Now"
+                                disabled="#{!enrollmentPeriodBean.enrollmentOpen}"
+                                onclick="PF('studentTabs').select(1);return false;"
+                                styleClass="ui-button-success"/>
+
+                        </div>
+
+                    </p:panel>
+
+                    <p:commandButton id="btnPaymentInstructions"
+                                     value="Payment Instructions"
+                                     type="button"
+                                     onclick="PF('paymentInstructionsDlg').show();" />
+
+                    <p:commandButton id="btnUploadProof"
+                                     value="Upload Payment Proof"
+                                     type="button"
+                                     onclick="PF('paymentUploadDlg').show();" />
+                </p:tab>
+
+
+                <!-- ===================================================== -->
+                <!-- SUBJECT SELECTION -->
+                <!-- ===================================================== -->
+
+                <p:tab title="📚 Subject Selection">
+
+                    <p:panel header="Available Subjects"
+                             styleClass="modern-card">
+
+                        <p:panel styleClass="filter-card">
+
+                            <f:facet name="header">
+                                <h:outputText value="Subject Filters"/>
+                            </f:facet>
+
+                            <h:panelGrid columns="2"
+                                         width="100%"
+                                         columnClasses="labelColumn,valueColumn">
+
+                                <h:outputText value="Program"/>
+
+                                <p:selectOneMenu
+                                    value="#{studentPortalBean.programId}">
+
+                                    <f:selectItems
+                                        value="#{programBean.programList}"
+                                        var="p"
+                                        itemLabel="#{p.program_code} - #{p.program_name}"
+                                        itemValue="#{p.program_id}" />
+
+                                  
+
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Year Level"/>
+
+                                <p:selectOneMenu
+                                    value="#{studentPortalBean.yearLevel}">
+
+                                    <f:selectItem itemLabel="1st Year" itemValue="1"/>
+                                    <f:selectItem itemLabel="2nd Year" itemValue="2"/>
+                                    <f:selectItem itemLabel="3rd Year" itemValue="3"/>
+                                    <f:selectItem itemLabel="4th Year" itemValue="4"/>
+
+                                  
+
+                                </p:selectOneMenu>
+                                
+                                <h:outputText value="Semester"/>
+                                
+                                <p:selectOneMenu
+                                    value="#{studentPortalBean.semester}">
+
+                                    <f:selectItem itemLabel="#{enrollmentPeriodBean.currentPeriod.semester}" 
+                                                  itemValue="#{enrollmentPeriodBean.currentPeriod.semester}"/>
+                                    
+                                   
+
+                      <!--              <p:ajax
+                                        listener="{studentPortalBean.loadAvailableCourses}"
+                                        update="availableSubjects selectedSubjects summaryPanel"/> -->
+
+                                </p:selectOneMenu>
+
+                            </h:panelGrid>
+
+                            <p:commandButton id="btnLoadSubjects" value="Load Subject List"
+                                             action="#{studentPortalBean.loadSubjectsPerSem()}"
+                                             update="availableSubjects selectedSubjects summaryPanel"/>
+                        </p:panel>
+
+                    </p:panel>
+
+                    <!-- Available Subjects -->
+
+                    <p:dataTable id="availableSubjects"
+                                 value="#{studentPortalBean.availableCourses}"
+                                 var="course"
+                                 paginator="true"
+                                 rows="10"
+                                 selection="#{studentPortalBean.selectedAvailableCourses}"
+                                 rowKey="#{course.courseId}">
+
+                        <p:column selectionMode="multiple"
+                                  style="width:40px"/>
+
+                        <p:column headerText="Code">
+                            #{course.courseCode}
+                        </p:column>
+
+                        <p:column headerText="Description">
+                            #{course.courseTitle}
+                        </p:column>
+
+                        <p:column headerText="Units">
+                            #{course.units}
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <br/>
+
+                    <p:commandButton id="btnAddSubjects"
+                                     value="Add Selected Subjects"
+                                     actionListener="#{studentPortalBean.addSelectedSubjects}"
+                                     update="selectedSubjects summaryPanel availableSubjects" />
+
+                    <br/><br/>
+
+                    <!-- Selected Subjects -->
+
+                    <p:panel header="Selected Subjects">
+
+                        <p:dataTable id="selectedSubjects"
+                                     value="#{studentPortalBean.selectedCourses}"
+                                     var="subj">
+
+                            <p:column headerText="Code">
+                                #{subj.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Description">
+                                #{subj.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{subj.units}
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+                    <!-- Summary -->
+
+                    <p:panel id="summaryPanel"
+                             header="Enrollment Summary"
+                             style="margin-top:10px">
+
+                        <h:panelGrid columns="2">
+
+                            <h:outputText value="Subjects Selected"/>
+                            <h:outputText value="#{studentPortalBean.selectedCourses.size()}" />
+
+                            <h:outputText value="Total Units"/>
+                            <h:outputText value="#{studentPortalBean.totalUnits}" />
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <br/>
+
+                    <p:commandButton id="btnSubmitEnrollment"
+                                     value="Submit Enrollment"
+                                     action="#{studentPortalBean.submitEnrollment}"
+                                     update="@form" />
+
+                </p:tab>
+
+                <!-- ===================================================== -->
+                <!-- ENROLLMENT HISTORY -->
+                <!-- ===================================================== -->
+
+                <p:tab title="📖 Enrollment History">
+
+                    <p:dataTable value="#{studentPortalBean.myEnrollments}"
+                                 var="en"
+                                 paginator="true"
+                                 rows="10">
+
+                        <p:column headerText="Academic Year">
+                            #{en.academic_year}
+                        </p:column>
+
+                        <p:column headerText="Semester">
+                            #{en.semester}
+                        </p:column>
+
+                        <p:column headerText="Units">
+                            #{en.totalUnits}
+                        </p:column>
+                        
+                        <p:column headerText="Status">
+                            #{en.status}
+                        </p:column>
+
+                        <p:column headerText="Payment Status">
+                            #{en.payment_status}
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:tab>
+
+            </p:tabView>
+
+            <!--Payment Instructions -->
+            <p:dialog id="paymentInstructionsDlg"
+                      widgetVar="paymentInstructionsDlg"
+                      header="Payment Instructions"
+                      modal="true"
+                      width="700"
+                      resizable="false">
+
+                <h:panelGroup layout="block">
+
+                    <h3>Online Payment Options</h3>
+
+                    <ul>
+                        <li><strong>GCash</strong></li>
+                        <li><strong>Maya</strong></li>
+                        <li><strong>Bank Transfer</strong></li>
+                    </ul>
+
+                    <p:separator/>
+
+                    <h3>GCash</h3>
+
+                    <p>
+                        Account Name: ABC College
+                        <br/>
+                        Mobile Number: 0917-123-4567
+                    </p>
+
+                    <h3>Maya</h3>
+
+                    <p>
+                        Account Name: ABC College
+                        <br/>
+                        Mobile Number: 0917-765-4321
+                    </p>
+
+                    <h3>Bank Deposit / Transfer</h3>
+
+                    <p>
+                        Bank: Sample Bank
+                        <br/>
+                        Account Name: ABC College
+                        <br/>
+                        Account Number: 1234567890
+                    </p>
+
+                    <p:separator/>
+
+                    <div style="color:#b71c1c;font-weight:bold">
+                        Note: After payment, please submit your proof of payment to the Cashier's Office
+                        or upload it through the Student Portal. Before submission make sure to use this file naming format:
+                        lastname_firstname_program_paymentfor ex. delacruz_miguel_bscs_prelims 
+                    </div>
+
+                </h:panelGroup>
+
+            </p:dialog>
+
+
+        </h:form>
+
+        <p:dialog id="paymentUploadDlg"
+                  widgetVar="paymentUploadDlg"
+                  header="Upload Payment Proof"
+                  modal="true"
+                  width="600"
+                  appendTo="@(body)"
+                  resizable="false">
+
+            <h:form id="paymentUploadForm"
+                    enctype="multipart/form-data">
+
+                <h:panelGrid columns="2" cellpadding="6">
+
+                    <h:outputLabel for="refNo"
+                                   value="Reference No:" />
+
+                    <p:inputText id="refNo"
+                                 value="#{studentPortalBean.paymentProof.referenceNumber}" />
+
+                    <h:outputLabel value="Upload Screenshot:" />
+
+                    <p:fileUpload id="proofFile"
+                                  mode="simple"
+                                  value="#{studentPortalBean.uploadedFile}" />
+
+                </h:panelGrid>
+
+                <p:separator/>
+
+                <p:commandButton value="Submit"
+                                 icon="pi pi-check"
+                                 actionListener="#{studentPortalBean.savePaymentProof}"
+                                 process="@form"
+                                 update=":enrollmentForm:msgs
+                                 :enrollmentForm"
+                                 oncomplete="if(!args.validationFailed) PF('paymentUploadDlg').hide();"
+                                 styleClass="ui-button-success"/>
+
+                <p:commandButton value="Cancel"
+                                 type="button"
+                                 icon="pi pi-times"
+                                 onclick="PF('paymentUploadDlg').hide();"
+                                 styleClass="ui-button-secondary"/>
+
+            </h:form>
+
+        </p:dialog>
+    </ui:define>
+</ui:composition>
+

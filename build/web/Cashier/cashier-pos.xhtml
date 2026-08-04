@@ -1,0 +1,432 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout-cashier.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <h:form id="form">
+
+            <!-- ===================================================== -->
+            <!-- PAGE TITLE -->
+            <!-- ===================================================== -->
+            <h2>Cashier Payment POS Module</h2>
+
+            <!-- ===================================================== -->
+            <!-- SEARCH -->
+            <!-- ===================================================== -->
+            <p:panel header="Search Student" style="margin-bottom:15px;">
+
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <h:outputText value="Search:" />
+
+                    <p:inputText value="#{paymentBean.searchKeyword}"
+                                 placeholder="Student No / Name"
+                                 style="width:300px;" />
+
+                    <p:commandButton value="🔍 Search"
+                                     action="#{paymentBean.searchStudentAccounts}"
+                                     update="studentTable studentInfoTabs quickActions" />
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <!-- ===================================================== -->
+            <!-- STUDENT TABLE -->
+            <!-- ===================================================== -->
+            <p:dataTable id="studentTable"
+                         value="#{paymentBean.searchResults}"
+                         var="s"
+                         paginator="true"
+                         rows="5"
+                         selectionMode="single"
+                         selection="#{paymentBean.selectedStudent}"
+                         rowKey="#{s.studno}">
+
+                <p:ajax event="rowSelect"
+                        listener="#{paymentBean.onStudentSelect}"
+                        update=":form:studentInfoTabs :paymentForm:paymentDialog :form:quickActions" />
+
+                <p:column headerText="Student No">
+                    <h:outputText value="#{s.studno}" />
+                </p:column>
+
+                <p:column headerText="Name">
+                    <h:outputText value="#{s.studentName}" />
+                </p:column>
+
+                <p:column headerText="Program">
+                    <h:outputText value="#{s.program_enrolled}" />
+                </p:column>
+
+            </p:dataTable>
+
+            <!-- ===================================================== -->
+            <!-- QUICK ACTIONS -->
+            <!-- ===================================================== -->
+            <p:panel id="quickActions" header="Quick Actions" style="margin-top:15px;">
+
+                <p:commandButton value="💵 New Payment"
+                                 process="@this"
+                                 update=":paymentForm:paymentDialog"
+                                 oncomplete="PF('paymentDlg').show()"
+                                 disabled="#{empty paymentBean.selectedStudent}" />
+
+                <p:commandButton value="🔄 Refresh"
+                                 action="#{paymentBean.reloadAccount}"
+                                 update="studentInfoTabs quickActions"
+                                 disabled="#{empty paymentBean.selectedStudent}" />
+
+            </p:panel>
+
+            <!-- ===================================================== -->
+            <!-- STUDENT INFO TABS -->
+            <!-- ===================================================== -->
+            <p:tabView id="studentInfoTabs" style="margin-top:15px;">
+
+                <!-- ================= ACCOUNT ================= -->
+                <p:tab title="Account">
+
+                    <h:panelGrid columns="2" cellpadding="8">
+
+                        <h:outputText value="Student No:" />
+                        <h:outputText value="#{paymentBean.selectedStudent.studno}" />
+
+                        <h:outputText value="Name:" />
+                        <h:outputText value="#{paymentBean.selectedStudent.studentName}" />
+
+                        <h:outputText value="Program:" />
+                        <h:outputText value="#{paymentBean.selectedStudent.program_enrolled}" />
+
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" cellpadding="8">
+
+                        <h:outputText value="Total Assessment:" />
+                        <h:outputText value="₱ #{paymentBean.totalAssessment}" />
+
+                        <h:outputText value="Total Paid:" />
+                        <h:outputText value="₱ #{paymentBean.totalPaid}" />
+
+                        <h:outputText value="Down Payment:" />
+                        <h:outputText value="₱ #{paymentBean.downPayment}" />
+
+                        <h:outputText value="Prelim:" />
+                        <h:outputText value="₱ #{paymentBean.prelimsDue}" />
+
+                        <h:outputText value="Midterm:" />
+                        <h:outputText value="₱ #{paymentBean.midtermsDue}" />
+
+                        <h:outputText value="Pre-Finals:" />
+                        <h:outputText value="₱ #{paymentBean.preFinalsDue}" />
+
+                        <h:outputText value="Finals:" />
+                        <h:outputText value="₱ #{paymentBean.finalsDue}" />
+
+                        <h:outputText value="Remaining Balance:" />
+                        <h:outputText value="₱ #{paymentBean.balance}" />
+
+                    </h:panelGrid>
+                </p:tab>
+
+                <!-- ================= LEDGER ================= -->
+                <p:tab title="Ledger">
+
+                    <p:dataTable value="#{paymentBean.ledgerEntries}"
+                                 var="l"
+                                 paginator="true"
+                                 rows="10">
+
+                        <p:column headerText="Date">
+                            <h:outputText value="#{l.transactionDate}">
+                                <f:convertDateTime pattern="MM/dd/yyyy hh:mm a"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Description">
+                            <h:outputText value="#{l.description}" />
+                        </p:column>
+
+                        <p:column headerText="Payment">
+                            <h:outputText value="₱ #{l.credit}" />
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:tab>
+
+                <!-- ================= PAYMENTS ================= -->
+                <p:tab title="Payments">
+
+                    <p:dataTable value="#{paymentBean.paymentHistory}"
+                                 var="p"
+                                 paginator="true"
+                                 rows="10">
+
+                        <p:column headerText="Ref No">
+                            <h:outputText value="#{p.paymentReferenceNumber}" />
+                        </p:column>
+
+                        <p:column headerText="Date">
+                            <h:outputText value="#{p.paymentDate}">
+                                <f:convertDateTime pattern="MM/dd/yyyy hh:mm a"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Amount">
+                            <h:outputText value="₱ #{p.amountPaid}" />
+                        </p:column>
+
+                        <p:column headerText="Method">
+                            <h:outputText value="#{p.paymentMethod}" />
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:tab>
+
+            </p:tabView>
+
+
+        </h:form>
+        <h:form id="paymentForm">
+            <!-- ===================================================== -->
+            <!-- PAYMENT DIALOG -->
+            <!-- ===================================================== -->
+            <p:dialog id="paymentDialog"
+                      widgetVar="paymentDlg"
+                      header="Cashier POS"
+                      modal="true"
+                      width="850"
+                      resizable="false">
+
+                <p:panel id="paymentPanel">
+
+                    <!-- ================================================= -->
+                    <!-- ADD ITEM SECTION -->
+                    <!-- ================================================= -->
+
+                    <p:panel header="Add Payment Item"
+                             style="margin-bottom:20px;">
+
+                        <div class="ui-g">
+
+                            <!-- FEE TYPE -->
+                            <div class="ui-g-12 ui-md-6">
+
+                                <h:outputText value="Fee Type/Payment Descriptions" /><br/>
+
+                                <p:selectOneMenu id="feeType"
+                                                 value="#{paymentBean.selectedFeeTypeId}"
+                                                 style="width:90%;">
+
+                                    <f:selectItems
+                                        value="#{paymentBean.payableItems}"
+                                        var="f"
+                                        itemLabel="#{f.description}"
+                                        itemValue="#{f.feeTypeId}" />
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <!-- AMOUNT -->
+                            <div class="ui-g-12 ui-md-4">
+
+                                <h:outputText value="Amount" /><br/>
+
+                                <p:inputNumber id="amountInput"
+                                               value="#{paymentBean.enteredAmount}"
+                                               decimalPlaces="2"
+                                               style="width:100%;" />
+
+                            </div>
+
+                            <!-- BUTTON -->
+                            <div class="ui-g-12 ui-md-2"
+                                 style="padding-top:20px;">
+
+                                <p:commandButton
+                                    value="➕ Add"
+                                    process="@this feeType amountInput"
+                                    action="#{paymentBean.addPaymentItem}"
+                                    update="paymentTable totalPanel"
+                                    style="width:100%;" />
+
+                            </div>
+
+                        </div>
+
+                    </p:panel>
+
+                    <!-- ================================================= -->
+                    <!-- PAYMENT ITEMS -->
+                    <!-- ================================================= -->
+
+                    <p:dataTable id="paymentTable"
+                                 value="#{paymentBean.paymentItems}"
+                                 var="i"
+                                 emptyMessage="No payment items added."
+                                 style="margin-bottom:25px;">
+
+                        <p:column headerText="Description">
+
+                            <h:outputText value="#{i.description}" />
+
+                        </p:column>
+
+                        <p:column headerText="Amount"
+                                  style="width:180px;text-align:right;">
+
+                            <h:outputText value="₱ #{i.amountPaid}" />
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <!-- ================================================= -->
+                    <!-- PAYMENT DETAILS -->
+                    <!-- ================================================= -->
+
+                    <div class="ui-g"
+                         style="margin-bottom:20px;">
+
+                        <!-- PAYMENT METHOD -->
+                        <div class="ui-g-12 ui-md-6">
+
+                            <h:outputText value="Payment Method" /><br/>
+
+                            <p:selectOneMenu id="paymentMethod"
+                                             value="#{paymentBean.payment.paymentMethod}"
+                                             style="width:90%;">
+
+                                <f:selectItem itemLabel="Cash"
+                                              itemValue="CASH" />
+
+                                <f:selectItem itemLabel="GCash"
+                                              itemValue="GCASH" />
+
+                                <f:selectItem itemLabel="Online Banking"
+                                              itemValue="ONLINE" />
+
+                                <f:selectItem itemLabel="Bank Deposit/Transfer"
+                                              itemValue="BANK" />
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <!-- REFERENCE NUMBER -->
+                        <div class="ui-g-12 ui-md-6">
+
+                            <h:outputText value="Reference Number" /><br/>
+
+                            <p:inputText
+                                value="#{paymentBean.payment.paymentReferenceNumber}"
+                                placeholder="Enter Reference / Transaction No."
+                                required="true"
+                                requiredMessage="Reference Number is required."
+                                style="width:100%;" />
+
+                        </div>
+
+                    </div>
+                    <div class="ui-g"
+                         style="margin-bottom:20px;">
+
+                        <!-- PAYMENT METHOD -->
+                        <div class="ui-g-12 ui-md-6">
+
+                            <h:outputText value="Payment For/Remarks" /><br/>
+
+                            <p:selectOneMenu id="remarks"
+                                             value="#{paymentBean.payment.remarks}"
+                                             style="width:90%;">
+
+                                <f:selectItem itemLabel="Down Payment"
+                                              itemValue="DOWNPAYMENT" />
+
+                                <f:selectItem itemLabel="Prelims"
+                                              itemValue="PRELIMS" />
+
+                                <f:selectItem itemLabel="Midterm"
+                                              itemValue="MIDTERM" />
+
+                                <f:selectItem itemLabel="Pre-Finals"
+                                              itemValue="PRE-FINALS" />
+
+                                <f:selectItem itemLabel="Finals"
+                                              itemValue="FINALS" />
+
+                                <f:selectItem itemLabel="Others"
+                                              itemValue="OTHERS" />
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+
+
+                    </div>
+
+                    <!-- ================================================= -->
+                    <!-- GRAND TOTAL -->
+                    <!-- ================================================= -->
+
+                    <h:panelGroup id="totalPanel" layout="block">
+
+                        <div style="
+                             text-align:right;
+                             font-size:34px;
+                             font-weight:bold;
+                             margin-top:10px;
+                             margin-bottom:25px;
+                             color:#2E4053;">
+
+                            GRAND TOTAL:
+                            ₱ #{paymentBean.payment.amountPaid}
+
+                        </div>
+
+                    </h:panelGroup>
+                    <!-- ================================================= -->
+                    <!-- ACTION BUTTONS -->
+                    <!-- ================================================= -->
+
+                    <div style="
+                         display:flex;
+                         justify-content:flex-end;
+                         gap:10px;">
+
+                        <p:commandButton
+                            value="🧾 Print Invoice"
+                            ajax="false"
+                            disabled="#{!paymentBean.paymentProcessed}"
+                            style="
+                            width:220px;
+                            height:45px;
+                            font-size:16px;" />
+
+                        <p:commandButton
+                            value="💵 Process Payment"
+                            action="#{paymentBean.submitPayment}"
+                            update=":form:studentInfoTabs :form:quickActions"
+                            oncomplete="PF('paymentDlg').hide()"
+                            style="
+                            width:220px;
+                            height:45px;
+                            font-size:16px;" />
+
+                    </div>
+
+                </p:panel>
+
+            </p:dialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

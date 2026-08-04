@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <p:dialog header="Add / Drop Request Details"
+              widgetVar="detailsDlg"
+              modal="true"
+              resizable="false"
+              width="700">
+
+        <h:form id="detailsForm">
+
+            <p:panelGrid columns="2" styleClass="ui-panelgrid-blank">
+
+                <h:outputText value="Student:"/>
+                <h:outputText value="#{registrarAddDropBean.selectedRequest.studentName}"
+                              style="font-weight:bold"/>
+
+                <h:outputText value="Request Date:"/>
+                <h:outputText value="#{registrarAddDropBean.selectedRequest.requestDate}">
+                    <f:convertDateTime pattern="MMM dd, yyyy"/>
+                </h:outputText>
+
+            </p:panelGrid>
+
+            <br/>
+
+            <!-- ADD SUBJECTS -->
+            <p:panel header="Subjects to ADD" rendered="#{not empty registrarAddDropBean.addList}">
+                <p:dataTable value="#{registrarAddDropBean.addList}" var="c">
+
+                    <p:column headerText="Code">
+                        #{c.courseCode}
+                    </p:column>
+
+                    <p:column headerText="Title">
+                        #{c.courseTitle}
+                    </p:column>
+
+                    <p:column headerText="Units">
+                        #{c.units}
+                    </p:column>
+
+                </p:dataTable>
+            </p:panel>
+
+            <br/>
+
+            <!-- DROP SUBJECTS -->
+            <p:panel header="Subjects to DROP" rendered="#{not empty registrarAddDropBean.dropList}">
+                <p:dataTable value="#{registrarAddDropBean.dropList}" var="c">
+
+                    <p:column headerText="Code">
+                        #{c.courseCode}
+                    </p:column>
+
+                    <p:column headerText="Title">
+                        #{c.courseTitle}
+                    </p:column>
+
+                    <p:column headerText="Units">
+                        #{c.units}
+                    </p:column>
+
+                </p:dataTable>
+            </p:panel>
+
+            <br/>
+
+            <!-- ACTION BUTTONS -->
+            <p:panelGrid columns="2" style="text-align:center">
+
+                <p:commandButton value="Approve"
+                                 icon="ui-icon-check"
+                                 action="#{registrarAddDropBean.approve}"
+                                 update=":approvalForm"
+                                 oncomplete="PF('detailsDlg').hide()"
+                                 styleClass="ui-button-success"/>
+
+                <p:commandButton value="Reject"
+                                 icon="ui-icon-close"
+                                 action="#{registrarAddDropBean.reject}"
+                                 update=":approvalForm"
+                                 oncomplete="PF('detailsDlg').hide()"
+                                 styleClass="ui-button-danger"/>
+
+            </p:panelGrid>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:composition>
+

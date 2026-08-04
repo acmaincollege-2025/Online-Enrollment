@@ -1,0 +1,195 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/layout_student.xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+
+        <h:form id="paymentHistoryForm">
+
+            <p:messages id="msgs" showDetail="true"/>
+
+            <!-- HEADER -->
+            <div class="page-header">
+                <h2>
+                    <i class="pi pi-wallet"></i>
+                    Student Payment History
+                </h2>
+                <p>
+                    Search students and view payment transactions.
+                </p>
+            </div>
+
+            <!-- SEARCH PANEL -->
+            <p:panel header="Search Student" styleClass="card-panel">
+
+                <p:panelGrid columns="5" layout="grid"
+                             style="width:100%;">
+
+                    <p:outputLabel value="Student No"/>
+
+                    <p:inputText value="#{paymentBean.searchStudentNo}"
+                                 placeholder="Enter Student No"/>
+
+                    <p:outputLabel value="Student Name"/>
+
+                    <p:inputText value="#{paymentBean.searchStudentName}"
+                                 placeholder="Enter Student Name"/>
+
+                    <p:commandButton value="Search"
+                                     icon="pi pi-search"
+                                     update="studentTable paymentTable"
+                                     action="#{paymentBean.searchStudents}"/>
+
+                </p:panelGrid>
+
+            </p:panel>
+
+            <br/>
+
+            <!-- STUDENT SEARCH RESULTS -->
+            <p:panel header="Search Results"
+                     rendered="#{not empty paymentBean.studentSearchResults}">
+
+                <p:dataTable id="studentTable"
+                             value="#{paymentBean.studentSearchResults}"
+                             var="student"
+                             selectionMode="single"
+                             rowKey="#{student.studentNo}"
+                             selection="#{paymentBean.selectedStudent}">
+
+                    <p:ajax event="rowSelect"
+                            listener="#{paymentBean.loadStudentPayments}"
+                            update="paymentTable printBtn"/>
+
+                    <p:column headerText="Student No">
+                        #{student.studentNo}
+                    </p:column>
+
+                    <p:column headerText="Name">
+                        #{student.lastName},
+                        #{student.firstName}
+                    </p:column>
+
+                    <p:column headerText="Program">
+                        #{student.programName}
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+
+            <br/>
+
+            <!-- PAYMENT HISTORY -->
+            <p:panel id="paymentTable"
+                     header="Payment History"
+                     rendered="#{not empty paymentBean.studentPayments}">
+
+                <p:dataTable value="#{paymentBean.studentPayments}"
+                             var="pay"
+                             paginator="true"
+                             rows="10"
+                             reflow="true">
+
+                    <p:column headerText="Payment ID">
+                        #{pay.paymentId}
+                    </p:column>
+
+                    <p:column headerText="Reference No">
+                        #{pay.paymentReferenceNumber}
+                    </p:column>
+
+                    <p:column headerText="Payment Method">
+                        #{pay.paymentMethod}
+                    </p:column>
+
+                    <p:column headerText="Amount">
+
+                        <h:outputText value="#{pay.amountPaid}">
+                            <f:convertNumber type="currency"
+                                             currencySymbol="₱"/>
+                        </h:outputText>
+
+                    </p:column>
+
+                    <p:column headerText="Status">
+
+                        <span class="status-badge #{pay.paymentStatus.toLowerCase()}">
+                            #{pay.paymentStatus}
+                        </span>
+
+                    </p:column>
+
+                    <p:column headerText="Remarks">
+                        #{pay.remarks}
+                    </p:column>
+
+                    <p:column headerText="Date">
+
+                        <h:outputText value="#{pay.paymentDate}">
+                            <f:convertDateTime
+                                pattern="MMM dd, yyyy hh:mm a"/>
+                        </h:outputText>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+
+            <br/>
+
+            <!-- PRINT SOA BUTTON -->
+            <p:commandButton id="printBtn"
+                             value="Print SOA"
+                             icon="pi pi-print"
+                             type="button"
+                             onclick="PF('soaDlg').show()"
+                             rendered="#{not empty paymentBean.studentPayments}"/>
+
+        </h:form>
+
+
+        <!-- SOA DIALOG -->
+        <p:dialog header="Generate Statement of Account"
+                  widgetVar="soaDlg"
+                  modal="true"
+                  resizable="false"
+                  width="500">
+
+            <h:form id="soaForm">
+
+                <p:panelGrid columns="2" style="width:100%;">
+
+                    <p:outputLabel value="From Date"/>
+
+                    <p:datePicker value="#{paymentBean.fromDate}"
+                                  pattern="MM/dd/yyyy"/>
+
+                    <p:outputLabel value="To Date"/>
+
+                    <p:datePicker value="#{paymentBean.toDate}"
+                                  pattern="MM/dd/yyyy"/>
+
+                </p:panelGrid>
+
+                <br/>
+
+                <p:commandButton value="Generate SOA"
+                                 icon="pi pi-file-pdf"
+                                 ajax="false"
+                                 action="#{paymentBean.printSOA}"/>
+
+            </h:form>
+
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>

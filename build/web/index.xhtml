@@ -1,0 +1,616 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Online Enrollment System</title>
+
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+
+        <!-- PrimeIcons -->
+        <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css"/>
+
+        <!-- Google Font -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"/>
+
+        <style>
+            body {
+                font-family: 'Inter', sans-serif;
+                background: linear-gradient(135deg, #eef2ff, #f8fafc);
+                margin: 0;
+                padding-top: 70px; /* adjust based on navbar height */
+            }
+
+            /* NAVBAR */
+            .navbar {
+                background: rgba(255,255,255,0.7);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+            }
+
+            /* HERO */
+            .hero {
+                text-align: center;
+                padding: 100px 20px 40px;
+            }
+
+            .hero h1 {
+                font-size: 4rem;
+                font-weight: 700;
+                background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .hero p {
+                color: #64748b;
+                margin-top: 10px;
+            }
+
+            /* MODULES */
+            .modules {
+                margin-top: 40px;
+            }
+
+            .module-card {
+                background: rgba(255,255,255,0.75);
+                backdrop-filter: blur(12px);
+                border-radius: 18px;
+                padding: 25px;
+                text-align: center;
+                height: 210px;
+                border: 1px solid rgba(255,255,255,0.3);
+                transition: 0.3s;
+            }
+
+            .module-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            }
+
+            .module-icon {
+                font-size: 34px;
+                color: #4f46e5;
+                margin-bottom: 10px;
+            }
+
+            /* LOGIN DIALOG */
+            .modern-dialog .ui-dialog-content {
+                padding: 25px;
+            }
+
+            .login-form .field {
+                margin-bottom: 15px;
+            }
+
+            .modern-input {
+                width: 100% !important;
+                padding: 10px !important;
+                border-radius: 8px !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+
+            .btn-login {
+                width: 100%;
+                padding: 10px;
+                border-radius: 8px !important;
+                background: linear-gradient(90deg, #4f46e5, #0ea5e9) !important;
+                border: none !important;
+                color: white !important;
+                font-weight: 600;
+            }
+
+            .footer {
+                text-align: center;
+                margin-top: 60px;
+                padding: 20px;
+                color: #94a3b8;
+            }
+
+
+            .nav-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            }
+            .navbar-custom {
+                background-color: #6a1b9a;
+            }
+
+            .navbar-custom .navbar-brand, .navbar-custom .nav-link {
+                color: white !important;
+            }
+            .carousel-container {
+                max-width: 1000px;
+                margin: 30px auto;
+            }
+
+            .carousel-img {
+                width: 100%;
+                height: 380px;
+                object-fit: cover;
+                border-radius: 18px;
+            }
+            /* NAVBAR BASE */
+            .modern-navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 9999;
+
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                padding: 10px 20px;
+
+                background: rgba(255,255,255,0.85);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid #eee;
+            }
+
+            /* LEFT */
+            .nav-left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .title {
+                font-weight: 800;
+            }
+
+            /* RIGHT */
+            .nav-right {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+            /* BUTTONS */
+            .nav-btn {
+                padding: 4px 10px !important;
+                font-size: 24px !important;
+                border-radius: 20px !important;
+                background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+                color: white !important;
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+            .nav-btn-outline {
+                border-radius: 999px !important;
+                padding: 6px 14px !important;
+                border: 1px solid #ccc;
+                background: white;
+            }
+            /* TARGET PrimeFaces button */
+            .nav-btn.ui-button {
+                padding: 4px 10px !important;
+                font-size: 13px !important;
+                border-radius: 20px !important;
+
+                /* 🔥 KEEP YOUR CUSTOM DESIGN */
+                background: linear-gradient(90deg, #4f46e5, #0ea5e9) !important;
+                border: none !important;
+                color: #fff !important;
+            }
+
+            /* Fix inner text spacing */
+            .nav-btn .ui-button-text {
+                padding: 0 !important;
+            }
+            /* MOBILE TOGGLE */
+            .nav-toggle {
+                display: none;
+                font-size: 24px;
+                cursor: pointer;
+            }
+
+            /* 📱 MOBILE VIEW */
+            @media (max-width: 768px) {
+
+                .nav-toggle {
+                    display: block;
+                }
+
+                .nav-right {
+                    position: absolute;
+                    top: 60px;
+                    right: 20px;
+                    background: white;
+                    border-radius: 12px;
+                    padding: 15px;
+                    flex-direction: column;
+                    gap: 10px;
+                    display: none;
+
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                }
+
+                .nav-right.show {
+                    display: flex;
+                }
+            }
+            #chat-toggle {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+                color: white;
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                text-align: center;
+                line-height: 55px;
+                font-size: 22px;
+                cursor: pointer;
+                box-shadow: 0 6px 18px rgba(0,0,0,.2);
+                z-index: 1000;
+            }
+
+            #chat-widget {
+                position: fixed;
+                bottom: 90px;
+                right: 20px;
+                width: 320px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0,0,0,.2);
+                display: none;
+                flex-direction: column;
+            }
+
+            .chat-header {
+                background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+                color: white;
+                padding: 10px;
+                font-weight: 600;
+            }
+
+            .chat-body {
+                height: 250px;
+                overflow-y: auto;
+                padding: 10px;
+            }
+
+            .chat-footer {
+                padding: 8px;
+                border-top: 1px solid #eee;
+            }
+
+            .chat-input {
+                width: 70%;
+            }
+
+            .chat-send {
+                width: 28%;
+            }
+
+            .chat-message {
+                padding: 6px;
+                margin-bottom: 5px;
+                border-radius: 8px;
+            }
+
+            .chat-message.user {
+                background: #dcf8c6;
+                text-align: right;
+            }
+
+            .chat-message.bot {
+                background: #eef2ff;
+            }
+            .dpa-link {
+                color: #4f46e5;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+            .hero-carousel {
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            .hero-slide {
+                position: relative;
+            }
+
+            .hero-img {
+                width: 100%;
+                height: 420px;
+                object-fit: cover;
+                border-radius: 18px;
+            }
+
+            /* OVERLAY */
+            .hero-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                color: white;
+                text-align: center;
+
+                background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+                border-radius: 18px;
+            }
+
+            .hero-overlay h1 {
+                font-size: 2.5rem;
+                font-weight: 700;
+            }
+
+            .hero-overlay p {
+                margin: 10px 0 20px;
+                font-size: 1.1rem;
+            }
+            .card-link {
+                font-size: 42px;        /* Increase size */
+                font-weight: 600;       /* Make it slightly bold */
+                color: #2c3e50;         /* Dark readable color */
+                text-decoration: none;
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            .card-link small {
+                font-size: 28px;        /* Subtitle size */
+                color: #555;
+            }
+
+            .card-link:hover {
+                color: #1a73e8;
+                text-decoration: underline;
+            }
+        </style>
+        <script>
+            function toggleMenu() {
+                var menu = document.getElementById("navMenu");
+                menu.classList.toggle("show");
+            }
+        </script>
+    </h:head>
+
+    <h:body>
+
+        <!-- NAVBAR -->
+        <nav class="navbar modern-navbar">
+
+            <!-- LEFT: Logo + Title -->
+            <div class="nav-left">
+                <h:graphicImage library="logo" name="logo.png" style="height:35px"/>
+                <span class="title"><h2>Alitagtag College Inc. - The College Enrollment Platform</h2></span>
+            </div>
+
+            <!-- MOBILE TOGGLE -->
+            <div class="nav-toggle" onclick="toggleMenu()">
+                ☰
+            </div>
+
+            <!-- RIGHT MENU -->
+            <div id="navMenu" class="nav-right">
+
+                <!-- Student 
+                <h:link outcome="student-login" styleClass="nav-btn">
+                    🎓 Student Portal
+                </h:link>
+                -->
+                <!-- Staff 
+                <button type="button"
+                        class="nav-btn"
+                        onclick="PF('loginDialog').show();">
+                    Staff Login
+                </button>-->
+                <h:form style="display:inline;">
+                    <p:commandButton value="Employee Login"
+                                     onclick="PF('loginDialog').show(); return false;"
+                                     styleClass="nav-btn"/>
+                    <p:commandButton value=" Student Login" action="student-login"
+                                     styleClass="nav-btn" />
+                </h:form>
+            </div>
+
+        </nav>
+
+        <div class="hero-carousel">
+
+            <p:carousel value="#{carouselUploadBean.imageList}" var="img"
+                        circular="true"
+                        autoPlayInterval="5000"
+                        numVisible="1">
+
+                <div class="hero-slide">
+
+                    <p:graphicImage value="#{resource['images/'.concat(img)]}"
+                                    styleClass="hero-img"/>
+
+                    <div class="hero-overlay">
+                        <h1>Welcome to Online Enrollment</h1>
+                        <p>Fast. Secure. Hassle-free enrollment experience.</p>
+
+                        <h:link outcome="student-login" styleClass="nav-btn">
+                            🎓 Enroll Now
+                        </h:link>
+                    </div>
+
+                </div>
+
+            </p:carousel>
+
+        </div>
+        <!-- HERO -->
+        <div class="hero">
+            <h1>The College Enrollment Platform</h1>
+            <p>Manage admissions, enrollment, and payments in one place</p>
+
+            <h:form>
+                <p:commandLink styleClass="nav-btn mt-3"
+                               onclick="PF('loginDialog').show();
+                                       return false;">
+                    🚀 Get Started      
+                </p:commandLink>
+
+            </h:form>
+        </div>
+
+        <!-- MODULES -->
+        <div class="container modules">
+            <div class="row g-4 justify-content-center">
+
+                <ui:repeat value="#{moduleBean.modulesForCurrentUser}" var="module">
+
+                    <div class="col-md-4 col-lg-3">
+                        <h:form>
+                            <p:commandLink styleClass="card-link"
+                                           onclick="PF('loginDialog').show(); return false;">
+
+                                <div class="module-card">
+                                    <i class="pi #{module.icon} module-icon"></i>
+
+                                    <h5>#{module.name}</h5>
+
+                                    <p style="font-size: 0.9rem; color:#64748b;">
+                                        #{module.description}
+                                    </p>
+                                </div>
+
+                            </p:commandLink>
+                        </h:form>
+                    </div>
+
+                </ui:repeat>
+
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            © 2025 The College Enrollment Platform
+            <ui:include src="/includes/dpa-dialog.xhtml" />
+
+            <!-- DATA PRIVACY LINK -->
+            <h:form style="display:inline;">
+
+                <p:commandLink value="Data Privacy Notice"
+                               onclick="PF('privacyDialog').show(); return false;"
+                               process="@this"/>
+
+            </h:form>
+        </div>
+
+        <!-- LOGIN DIALOG -->
+        <p:dialog header="Welcome Back"
+                  widgetVar="loginDialog"
+                  modal="true"
+                  appendTo="@(body)"
+                  styleClass="modern-dialog"
+                  width="380">
+
+            <h:form id="loginForm" styleClass="login-form">
+
+                <p:messages />
+
+                <div class="field">
+                    <p:inputText value="#{loginBean.username}" 
+                                 placeholder="Username" 
+                                 styleClass="modern-input"/>
+                </div>
+
+                <div class="field">
+                    <p:password value="#{loginBean.password}" 
+                                placeholder="Password"
+                                feedback="false"
+                                styleClass="modern-input"/>
+                </div>
+
+                <p:commandButton value="Login"
+                                 action="#{loginBean.login}"
+                                 update="loginForm"
+                                 styleClass="btn-login"/>
+
+            </h:form>
+
+        </p:dialog>
+        <h:form id="chatWidgetForm">
+
+            <!-- Floating Button 
+            <div id="chat-toggle" onclick="toggleChat()">
+                💬
+            </div>
+            -->
+            <!-- Chat Box -->
+            <div id="chat-widget">
+                <div class="chat-header">
+                    Help Assistant
+                    <span class="close-btn" onclick="toggleChat()">✖</span>
+                </div>
+
+                <div class="chat-body">
+                    <ui:repeat value="#{chatBean.messages}" var="msg">
+                        <div class="chat-message #{msg.sender eq 'Bot' ? 'bot' : 'user'}">
+                            #{msg.text}
+                        </div>
+                    </ui:repeat>
+                </div>
+
+                <div class="chat-footer">
+                    <p:inputText value="#{chatBean.userMessage}"
+                                 styleClass="chat-input"
+                                 placeholder="Type a message..." />
+
+                    <p:commandButton value="Send"
+                                     action="#{chatBean.send}"
+                                     update="chatWidgetForm"
+                                     styleClass="chat-send"/>
+                </div>
+            </div>
+
+        </h:form>
+        <p:dialog header="Data Privacy Notice"
+                  widgetVar="privacyDialog"
+                  modal="true"
+                  width="500">
+
+            <h:form>
+                <p:scrollPanel style="height:250px;">
+                    <p>
+                        This system complies with the Data Privacy Act (RA 10173).
+                        Your personal data is securely handled and only used for
+                        academic and administrative purposes.
+                    </p>
+                </p:scrollPanel>
+
+                <div style="text-align:center; margin-top:10px;">
+                    <p:commandButton value="I Agree"
+                                     onclick="PF('privacyDialog').hide(); return false;"
+                                     styleClass="btn btn-success"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        <h:panelGroup rendered="#{param.timeout eq 'true'}">
+            <h:outputText value="You were logged out due to inactivity."
+                          style="color:red;" />
+        </h:panelGroup>
+        <!--
+        <script>
+            function toggleChat() {
+                var chat = document.getElementById("chat-widget");
+                chat.style.display =
+                        (chat.style.display === "none" || chat.style.display === "")
+                        ? "flex" : "none";
+            }
+        </script>
+        -->
+    </h:body>
+</html>

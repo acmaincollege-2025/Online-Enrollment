@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    template="./../template/layout-admission.xhtml">
+
+    <ui:define name="content">
+        <h:form id="form">
+
+            <p:growl id="msgs"/>
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+
+                <h2>
+                    <i class="pi pi-users"></i>
+                    Student Records
+                </h2>
+
+                <p:commandButton
+                    value="New Student"
+                    action="/Admission/student-registration.xhtml"
+                    styleClass="ui-button-success"/>
+
+            </div>
+
+            <!-- FILTER CARD -->
+
+            <p:panel header="Search and Filters">
+
+                <h:panelGrid columns="4"
+                             cellpadding="5"
+                             width="100%">
+
+                    <p:inputText
+                        value="#{studentBean.keyword}"
+                        placeholder="Search Student No or Name"/>
+
+                    <p:selectOneMenu value="#{studentBean.selectedProgram}">
+                        <f:selectItem itemLabel="All Programs" itemValue=""/>
+
+                        <f:selectItems
+                            value="#{studentBean.programList}"
+                            var="p"
+                            itemLabel="#{p.program_name}"
+                            itemValue="#{p.program_code}"/>
+                    </p:selectOneMenu>
+
+                    <p:selectOneMenu value="#{studentBean.selectedType}">
+                        <f:selectItem itemLabel="All Types" itemValue=""/>
+                        <f:selectItem itemLabel="Freshman" itemValue="freshman"/>
+                        <f:selectItem itemLabel="Transferee" itemValue="transferee"/>
+                        <f:selectItem itemLabel="Returnee" itemValue="returnee"/>
+                        <f:selectItem itemLabel="Old Student" itemValue="old"/>
+                    </p:selectOneMenu>
+
+                    <p:commandButton
+                        value="Search"
+                        icon="ui-icon-search"
+                        action="#{studentBean.searchStudents}"
+                        update="tblStudents"/>
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <br/>
+
+            <!-- STUDENT TABLE -->
+
+            <p:dataTable id="tblStudents"
+                         value="#{studentBean.studentList}"
+                         var="s"
+                         paginator="true"
+                         rows="10"
+                         rowKey="#{s.studno}"
+                         emptyMessage="No records found">
+
+
+
+                <p:column headerText="Student No">
+                    #{s.studno}
+                </p:column>
+
+                <p:column headerText="Student Name">
+                    #{s.lastname}, #{s.firstname}
+                </p:column>
+
+                <p:column headerText="Program">
+                    #{s.program_enrolled}
+                </p:column>
+
+                <p:column headerText="Type">
+                    #{s.studentType}
+                </p:column>
+
+
+
+                <p:column headerText="Actions" width="250">
+
+                    <p:commandButton
+                        icon="ui-icon-search"
+                        title="View"
+                        process="@this"
+                        action="#{studentBean.viewStudent(s)}"
+                        oncomplete="PF('viewDlg').show()"
+                        update="viewForm"/>
+
+                    <p:commandButton
+                        icon="ui-icon-pencil"
+                        title="Edit"
+                        action="#{studentBean.editStudent(s)}" />
+
+                    <p:commandButton
+                        icon="ui-icon-trash"
+                        styleClass="ui-button-danger"
+                        process="@this"
+                        actionListener="#{studentBean.confirmDelete(s)}"
+                        oncomplete="PF('deleteDlg').show()"/>
+
+                </p:column>
+
+            </p:dataTable>
+
+        </h:form>
+        <p:dialog
+            header="Student Profile"
+            widgetVar="viewDlg"
+            modal="true"
+            width="700">
+
+            <h:form id="viewForm">
+
+                <h:panelGrid columns="2">
+
+                    <h:outputText value="Student No:"/>
+                    <h:outputText value="#{studentBean.selectedStudent.studno}"/>
+
+                    <h:outputText value="Name:"/>
+                    <h:outputText value="#{studentBean.selectedStudent.fullName}"/>
+
+                    <h:outputText value="Program:"/>
+                    <h:outputText value="#{studentBean.selectedStudent.program_enrolled}"/>
+
+                    <h:outputText value="Email:"/>
+                    <h:outputText value="#{studentBean.selectedStudent.email}"/>
+
+                    <h:outputText value="Contact No:"/>
+                    <h:outputText value="#{studentBean.selectedStudent.contactno}"/>
+
+                </h:panelGrid>
+
+            </h:form>
+
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

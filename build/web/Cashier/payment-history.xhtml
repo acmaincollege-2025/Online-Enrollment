@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/cashier-layout.xhtml">
+
+    <ui:define name="content">
+
+        <h:form id="historyForm">
+
+            <p:growl id="messages" showDetail="true"/>
+
+            <!-- ================= FILTER PANEL ================= -->
+            <p:panel header="🔍 Payment History Filters"
+                     styleClass="ui-panel-card">
+
+                <h:panelGrid columns="4" cellpadding="6">
+
+                    <h:outputLabel value="Start Date" />
+                    <p:calendar value="#{cashierPaymentHistoryBean.startDate}"
+                                pattern="yyyy-MM-dd"
+                                navigator="true"
+                                showButtonPanel="true"/>
+
+                    <h:outputLabel value="End Date" />
+                    <p:calendar value="#{cashierPaymentHistoryBean.endDate}"
+                                pattern="yyyy-MM-dd"
+                                navigator="true"
+                                showButtonPanel="true"/>
+
+                    <h:outputLabel value="Program" />
+                    <p:inputText value="#{cashierPaymentHistoryBean.selectedProgram}"
+                                 placeholder="e.g. BSIT"/>
+
+                    <h:outputLabel value="Cashier Name" />
+                    <p:inputText value="#{cashierPaymentHistoryBean.cashierName}"
+                                 placeholder="Cashier"/>
+
+                </h:panelGrid>
+
+                <br/>
+
+                <p:commandButton value="Filter"
+                                 action="#{cashierPaymentHistoryBean.filterPayments}"
+                                 update="historyPanel totalPanel"/>
+
+                <p:commandButton value="Reset"
+                                 icon="pi pi-refresh"
+                                 type="reset"
+                                 styleClass="ui-button-secondary"/>
+
+            </p:panel>
+
+            <br/>
+
+            <!-- ================= SUMMARY PANEL ================= -->
+            <p:panel header="📊 Payment Summary"
+                     styleClass="ui-panel-card"
+                     style="background:#f9f9f9">
+
+                <h:panelGrid columns="2" cellpadding="8" style="width:100%">
+
+                    <h:outputText value="Total Records:" />
+                    <h:outputText value="#{cashierPaymentHistoryBean.filteredPayments.size()}" />
+
+                    <h:outputText value="Total Amount Collected:"
+                                  style="font-weight:bold"/>
+                    <h:outputText value="#{cashierPaymentHistoryBean.totalAmount}"
+                                  style="font-weight:bold;color:#2e7d32">
+                        <f:convertNumber pattern="₱ #,##0.00"/>
+                    </h:outputText>
+
+                </h:panelGrid>
+            </p:panel>
+
+            <br/>
+
+            <!-- ================= PAYMENT TABLE ================= -->
+            <p:panel header="💳 Payment Records">
+
+                <p:dataTable value="#{cashierPaymentHistoryBean.filteredPayments}"
+                             var="pmt"
+                             paginator="true"
+                             rows="10"
+                             rowsPerPageTemplate="10,20,50"
+                             styleClass="ui-datatable-striped"
+                             emptyMessage="No payments found">
+
+                    <p:column headerText="Date">
+                        <h:outputText value="#{pmt.paymentDate}">
+                            <f:convertDateTime pattern="yyyy-MM-dd"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Student No">
+                        <h:outputText value="#{pmt.studentNo}" />
+                    </p:column>
+
+                    <p:column headerText="Student Name">
+                        <h:outputText value="#{pmt.studentName}" />
+                    </p:column>
+
+                    <p:column headerText="Program">
+                        <h:outputText value="#{pmt.programName}" />
+                    </p:column>
+
+                    <p:column headerText="OR / Ref No">
+                        <h:outputText value="#{pmt.paymentReferenceNumber}" />
+                    </p:column>
+
+                    <p:column headerText="Payment Type">
+                        <h:outputText value="#{pmt.paymentType}" />
+                    </p:column>
+
+                    <p:column headerText="Cashier">
+                        <h:outputText value="#{pmt.receivedBy}" />
+                    </p:column>
+
+                    <p:column headerText="Amount"
+                              style="text-align:right">
+                        <h:outputText value="#{pmt.amountPaid}">
+                            <f:convertNumber pattern="₱ #,##0.00"/>
+                        </h:outputText>
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+            <!-- ================= PRINTABLE PAYMENT REPORT ================= -->
+
+            <p:panel id="printPanel"
+                     style="display:none"
+                     styleClass="print-only">
+
+                <!-- ================= SCHOOL HEADER ================= -->
+                <h:panelGrid columns="3"
+                             columnClasses="logo-col,center-col,right-col"
+                             style="width:100%;margin-bottom:10px">
+
+                    <!-- LEFT: LOGO -->
+                    <h:graphicImage value="/resources/images/school-logo.png"
+                                    style="height:70px"/>
+
+                    <!-- CENTER: SCHOOL INFO -->
+                    <h:panelGroup layout="block" style="text-align:center">
+                        <h2 style="margin:0">YOUR SCHOOL NAME</h2>
+                        <h:outputText value="School Address Line 1" /><br/>
+                        <h:outputText value="City, Province" /><br/>
+                        <h:outputText value="Tel No: (000) 000-0000" />
+                    </h:panelGroup>
+
+                    <!-- RIGHT: REPORT META -->
+                    <h:panelGroup layout="block" style="text-align:right;font-size:12px">
+                        <h:outputText value="Report Date:" /><br/>
+                        <h:outputText value="#{now}">
+                            <f:convertDateTime pattern="yyyy-MM-dd HH:mm"/>
+                        </h:outputText>
+                    </h:panelGroup>
+
+                </h:panelGrid>
+
+                <hr/>
+
+                <h3 style="text-align:center;margin:5px 0">
+                    PAYMENT COLLECTION REPORT
+                </h3>
+
+
+                <p:outputPanel id="historyPanel">
+
+                    <p:dataTable id="historyTable"
+                                 value="#{cashierPaymentHistoryBean.filteredPayments}"
+                                 var="payment"
+                                 rendered="#{not empty cashierPaymentHistoryBean.filteredPayments}"
+                                 style="width:100%;">
+
+                        <p:column headerText="Student No">
+                            #{payment.studentNo}
+                        </p:column>
+
+                        <p:column headerText="Amount">
+                            ₱#{payment.amountPaid}
+                        </p:column>
+
+                        <p:column headerText="Date">
+                            #{payment.paymentDate}
+                        </p:column>
+
+                        <p:column headerText="Type">
+                            #{payment.paymentType}
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <!-- Empty State -->
+                    <p:panel rendered="#{empty cashierPaymentHistoryBean.filteredPayments}"
+                             style="text-align:center; padding:30px; background:#f8f9fa; border:1px dashed #ccc;">
+
+                        <h3 style="color:#999;">No Payment Records Found</h3>
+                        <p>Please adjust your filter criteria.</p>
+
+                    </p:panel>
+
+                </p:outputPanel>
+
+
+                <br/>
+
+                <h3 style="text-align:right">
+                    TOTAL: ₱
+                    <h:outputText value="#{cashierPaymentHistoryBean.totalAmount}">
+                        <f:convertNumber pattern="#,##0.00"/>
+                    </h:outputText>
+                </h3>
+
+            </p:panel>
+            <!-- ================= ACTION BUTTONS ================= -->
+            <p:toolbar>
+
+                <p:toolbarGroup align="left">
+
+                    <p:commandButton value="Print"
+                                     icon="pi pi-print"
+                                     type="button"
+                                     onclick="printReport()"
+                                     styleClass="ui-button-secondary"/>
+
+                </p:toolbarGroup>
+
+                <p:toolbarGroup align="right">
+
+                    <!-- Excel Export -->
+                    <p:commandButton value="Excel"
+                                     icon="pi pi-file-excel"
+                                     ajax="false"
+                                     styleClass="ui-button-success">
+                        <p:dataExporter type="xls"
+                                        target="paymentTable"
+                                        fileName="Payment_Report"/>
+                    </p:commandButton>
+
+                    <!-- PDF Export -->
+                    <p:commandButton value="PDF"
+                                     icon="pi pi-file-pdf"
+                                     ajax="false"
+                                     styleClass="ui-button-danger">
+                        <p:dataExporter type="pdf"
+                                        target="paymentTable"
+                                        fileName="Payment_Report"/>
+                    </p:commandButton>
+
+                </p:toolbarGroup>
+
+            </p:toolbar>
+
+            <br/>
+
+        </h:form>
+        <h:outputStylesheet>
+            @media print {
+            body * {
+            visibility: hidden;
+            }
+            .print-only, .print-only * {
+            visibility: visible;
+            }
+            .print-only {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            }
+            }
+        </h:outputStylesheet>
+
+        <h:outputScript>
+            function printReport() {
+            document.getElementById('historyForm:printPanel').style.display = 'block';
+            window.print();
+            document.getElementById('historyForm:printPanel').style.display = 'none';
+            }
+        </h:outputScript>
+
+    </ui:define>
+</ui:composition>

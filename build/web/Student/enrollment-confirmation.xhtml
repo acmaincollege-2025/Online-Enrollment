@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    template="/templates/student-template.xhtml">
+
+    <ui:define name="title">
+        Enrollment Confirmation
+    </ui:define>
+
+    <ui:define name="content">
+
+        <!-- ================= PRINT STYLES ================= -->
+        <h:outputStylesheet>
+            @media print {
+            body {
+            font-size: 12px;
+            }
+            .no-print {
+            display: none !important;
+            }
+            .print-panel {
+            border: none !important;
+            }
+            }
+        </h:outputStylesheet>
+
+        <h:form id="confirmationForm">
+
+            <p:panel header="College Enrollment Confirmation"
+                     styleClass="print-panel"
+                     style="max-width:1000px;margin:auto;">
+
+                <!-- ================= STUDENT INFO ================= -->
+                <p:fieldset legend="Student Information">
+                    <p:panelGrid columns="2" layout="grid"
+                                 columnClasses="ui-grid-col-6,ui-grid-col-6">
+
+                        <h:outputText value="Student No:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.studno}" />
+
+                        <h:outputText value="Full Name:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.studentName}" />
+
+                        <h:outputText value="Program:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.programName}" />
+
+                        <h:outputText value="Year Level:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.yearLevel}" />
+
+                    </p:panelGrid>
+                </p:fieldset>
+
+                <!-- ================= ENROLLMENT DETAILS ================= -->
+                <p:fieldset legend="Enrollment Details">
+                    <p:panelGrid columns="2" layout="grid"
+                                 columnClasses="ui-grid-col-6,ui-grid-col-6">
+
+                        <h:outputText value="Academic Year:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.academic_year}" />
+
+                        <h:outputText value="Semester:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.semester}" />
+
+                        <h:outputText value="Date Enrolled:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.date_enrolled}">
+                            <f:convertDateTime pattern="MMMM dd, yyyy" />
+                        </h:outputText>
+
+                        <h:outputText value="Status:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.status}" />
+
+                    </p:panelGrid>
+                </p:fieldset>
+
+                <!-- ================= ASSESSMENT & PAYMENT ================= -->
+                <p:fieldset legend="Assessment & Payment Status">
+
+                    <p:panelGrid columns="2" layout="grid"
+                                 columnClasses="ui-grid-col-6,ui-grid-col-6">
+
+                        <h:outputText value="Assessment Status:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.status}" />
+
+                        <h:outputText value="Payment Status:" />
+                        <h:outputText value="#{enrollmentBean.selectedEnrollment.payment_status}" />
+
+                        <p:fieldset legend="Assessment & Payment Status">
+
+                            <p:panelGrid columns="2" layout="grid"
+                                         columnClasses="ui-grid-col-6,ui-grid-col-6">
+
+                                <h:outputText value="Assessment Status:" />
+                                <h:outputText value="#{enrollmentBean.assessed ? 'ASSESSED' : 'PENDING'}" />
+
+                                <h:outputText value="Payment Status:" />
+                                <h:outputText value="#{enrollmentBean.paid ? 'PAID' : 'UNPAID'}" />
+
+                                <h:outputText value="Total Assessment:" />
+                                <h:outputText value="#{enrollmentBean.totalAssessmentAmount}">
+                                    <f:convertNumber type="currency" currencySymbol="₱" />
+                                </h:outputText>
+
+                                <h:outputText value="Amount Paid:" />
+                                <h:outputText value="#{enrollmentBean.amountPaid}">
+                                    <f:convertNumber type="currency" currencySymbol="₱" />
+                                </h:outputText>
+
+                            </p:panelGrid>
+
+                        </p:fieldset>
+
+
+                    </p:panelGrid>
+
+                </p:fieldset>
+
+                <!-- ================= ENROLLED SUBJECTS ================= -->
+                <p:fieldset legend="Enrolled Subjects">
+
+                    <p:dataTable value="#{enrollmentBean.selectedEnrollment.enrolledCourses}"
+                                 var="c"
+                                 emptyMessage="No subjects enrolled">
+
+                        <p:column headerText="Course Code">
+                            <h:outputText value="#{c.courseCode}" />
+                        </p:column>
+
+                        <p:column headerText="Course Title">
+                            <h:outputText value="#{c.courseTitle}" />
+                        </p:column>
+
+                        <p:column headerText="Units" style="text-align:center;">
+                            <h:outputText value="#{c.units}" />
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <h:outputText value="Total Units: #{enrollmentBean.totalUnits}" />
+                        </f:facet>
+
+                    </p:dataTable>
+
+                </p:fieldset>
+
+                <!-- ================= ACTION BUTTONS ================= -->
+                <div class="no-print" style="text-align:center;margin-top:20px;">
+
+                    <p:commandButton value="Print / Save as PDF"
+                                     icon="pi pi-print"
+                                     type="button"
+                                     onclick="window.print()" />
+
+                    <p:spacer width="10" />
+
+                    <p:button value="Back"
+                              icon="pi pi-arrow-left"
+                              outcome="enrollment-student" />
+
+                </div>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+    <f:facet name="footer">
+        <h:outputText value="Total Units: #{enrollmentBean.totalUnits}" />
+    </f:facet>
+
+</ui:composition>
+
+

@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout_student.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <style>
+            .page-panel {
+                border: none !important;
+            }
+
+            .page-description {
+                color: #666;
+                font-size: 13px;
+            }
+
+            .subject-grid {
+                width: 100%;
+            }
+
+            .subject-panel {
+                margin: 5px;
+            }
+
+            .summary-panel {
+                margin-top: 15px;
+            }
+
+            .summary-grid td {
+                padding: 8px 12px;
+            }
+
+            .submit-btn {
+                min-width: 180px;
+            }
+        </style>
+
+        <h:form id="addDropForm">
+
+            <p:growl id="msgs" showDetail="true"/>
+
+            <p:panel header="Add / Drop Subjects Request">
+
+                <p:tabView id="addDropTabs"
+                           widgetVar="tabsWV"
+                           dynamic="false" activeIndex="#{addDropBean.activeTab}">
+
+                    <!-- ================= TAB 1: DROP ================= -->
+                    <p:tab title="Step 1. Drop Subjects">
+
+                        <h3>Currently Enrolled Subjects</h3>
+
+                        <p:dataTable id="dropTable"
+                                     value="#{addDropBean.enrolledCourses}"
+                                     var="c"
+                                     selection="#{addDropBean.coursesToDrop}"
+                                     rowKey="#{c.courseId}"
+                                     paginator="true"
+                                     rows="8">
+
+                            <p:column selectionMode="multiple" style="width:40px"/>
+
+                            <p:column headerText="Code">
+                                #{c.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Title">
+                                #{c.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{c.units}
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <br/>
+                        <p:commandButton value="Add to Drop List"
+                                         actionListener="#{addDropBean.addToDropList}"
+                                         update="dropCandidates navigationPanel addDropForm:msgs"/>
+
+
+                        <p:separator/>
+
+                        <h3>Subjects Selected For Dropping</h3>
+
+                        <p:dataTable id="dropCandidates"
+                                     value="#{addDropBean.selectedDropCandidates}"
+                                     var="c"
+                                     emptyMessage="No subjects selected">
+
+                            <p:column headerText="Code">
+                                #{c.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Title">
+                                #{c.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{c.units}
+                            </p:column>
+
+                        </p:dataTable>
+                        <p:outputPanel id="navigationPanel">
+                            <h:outputText value="Total Item to Drop: #{addDropBean.selectedDropCandidates.size()}" /> <br/>
+
+                            <p:commandButton value="Next: Add Subjects"
+                                             action="#{addDropBean.nextToAdd}"
+                                             update="addDropTabs"
+                                             disabled="#{empty addDropBean.selectedDropCandidates}" 
+                                             onclick="tabsWV.select(1);return false;"/>
+
+                        </p:outputPanel>
+
+                    </p:tab>
+
+                    <!-- ================= TAB 2: ADD ================= -->
+                    <p:tab title="Step 2. Add Subjects">
+
+                        <h3>Available Subjects</h3>
+
+                        <!-- FILTERS (optional section you already planned) -->
+                        <p:panelGrid columns="6">
+
+                            <h:outputText value="Program"/>
+                            <p:selectOneMenu value="#{addDropBean.selectedProgramId}">
+                                <f:selectItem itemLabel="All" itemValue="#{null}" />
+                                <f:selectItems value="#{addDropBean.programs}"
+                                               var="p"
+                                               itemLabel="#{p.program_name}"
+                                               itemValue="#{p.program_id}" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Year"/>
+                            <p:selectOneMenu value="#{addDropBean.selectedYearLevel}">
+                                <f:selectItem itemLabel="All" itemValue="#{null}" />
+                                <f:selectItem itemLabel="1st" itemValue="1" />
+                                <f:selectItem itemLabel="2nd" itemValue="2" />
+                                <f:selectItem itemLabel="3rd" itemValue="3" />
+                                <f:selectItem itemLabel="4th" itemValue="4" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Semester"/>
+                            <p:selectOneMenu value="#{addDropBean.selectedSemester}">
+                                <f:selectItem itemLabel="All" itemValue="#{null}" />
+                                <f:selectItem itemLabel="1st" itemValue="1st" />
+                                <f:selectItem itemLabel="2nd" itemValue="2nd" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+
+                        <p:commandButton value="Search"
+                                         icon="ui-icon-search"
+                                         actionListener="#{addDropBean.searchAvailableSubjects}"
+                                         update="addTable addCandidates addDropForm:msgs"/>
+
+                        <br/><br/>
+
+                        <!-- AVAILABLE SUBJECTS TABLE -->
+                        <p:dataTable id="addTable"
+                                     value="#{addDropBean.availableCourses}"
+                                     var="c"
+                                     selection="#{addDropBean.coursesToAdd}"
+                                     rowKey="#{c.courseId}"
+                                     paginator="true"
+                                     rows="8">
+
+                            <p:column selectionMode="multiple" style="width:40px"/>
+
+                            <p:column headerText="Code">
+                                #{c.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Title">
+                                #{c.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{c.units}
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <br/>
+
+                        <!-- ADD BUTTON -->
+                        <p:commandButton value="Add Selected Subjects"
+                                         icon="ui-icon-plus"
+                                         actionListener="#{addDropBean.addToAddCandidates}"
+                                         update="addCandidates nxtReviewPnl addDropForm:msgs"/>
+
+                        <br/><br/>
+
+                        <!-- ================= CANDIDATE TABLE ================= -->
+                        <h3>Subjects To Be Added</h3>
+
+                        <p:dataTable id="addCandidates"
+                                     value="#{addDropBean.selectedAddCandidates}"
+                                     var="c"
+                                     emptyMessage="No subjects selected">
+
+                            <p:column headerText="Code">
+                                #{c.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Title">
+                                #{c.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{c.units}
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <br/>
+
+                        <!-- NEXT BUTTON (FIXED CONDITION) -->
+                        <p:panel id="nxtReviewPnl">
+                             <p:commandButton value="Next: Review"
+                                         onclick="tabsWV.select(2); return false;"
+                                         action="#{addDropBean.addToAddCandidates}"
+                                         disabled="#{empty addDropBean.selectedAddCandidates}" />
+
+                        </p:panel>
+                    </p:tab>
+                    <!-- ================= TAB 3: REVIEW ================= -->
+                    <p:tab title="Step 3. Review and Submit">
+
+                        <h3>Request Summary</h3>
+
+                        <p:panelGrid columns="2">
+
+                            <h:outputText value="Subjects to Add:"/>
+                            <h:outputText value="#{addDropBean.coursesToAdd.size()}"/>
+
+                            <h:outputText value="Subjects to Drop:"/>
+                            <h:outputText value="#{addDropBean.coursesToDrop.size()}"/>
+
+                            <h:outputText value="Units Added:"/>
+                            <h:outputText value="#{addDropBean.totalUnitsToAdd}"/>
+
+                            <h:outputText value="Units Dropped:"/>
+                            <h:outputText value="#{addDropBean.totalUnitsToDrop}"/>
+
+                        </p:panelGrid>
+
+                        <br/>
+
+                        <h:outputLabel value="Reason for Request"/><br/>
+
+                        <p:inputTextarea value="#{addDropBean.reason}"
+                                         rows="4"
+                                         style="width:100%"
+                                         placeholder="Explain your reason..." />
+
+                        <br/><br/>
+
+                        <p:commandButton value="Submit Request"
+                                         action="#{addDropBean.submitRequest}"
+                                         update="@form"
+                                         styleClass="ui-button-success"
+                                         disabled="#{empty addDropBean.coursesToAdd and empty addDropBean.coursesToDrop}" />
+
+                    </p:tab>
+
+                </p:tabView>
+
+            </p:panel>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

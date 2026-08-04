@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/layout-cashier.xhtml">
+
+    <ui:define name="content">
+        <style type="text/css">
+            .ui-panelgrid.showcase-text-align-center .ui-grid-responsive .ui-panelgrid-cell {
+                text-align: center;
+            }
+
+            .customPanelGrid .ui-panelgrid-content {
+                align-items: center;
+                .badge-warning {
+                    background-color: orange;
+                    color: white;
+                    padding: 3px 8px;
+                    border-radius: 5px;
+                }
+
+                .badge-success {
+                    background-color: green;
+                    color: white;
+                    padding: 3px 8px;
+                    border-radius: 5px;
+                }
+            }
+        </style>
+
+
+        <h:form id="form">
+
+            <h:form id="form">
+
+                <p:growl id="growl" showDetail="true"/>
+
+                <p:panel header="Fee Type Management">
+
+                    <h:panelGrid columns="2" cellpadding="5">
+
+                        <p:outputLabel value="Fee Code"/>
+                        <p:inputText value="#{feeSetupBean.feeType.feeCode}"
+                                     required="true"/>
+
+                        <p:outputLabel value="Description"/>
+                        <p:inputText value="#{feeSetupBean.feeType.description}"
+                                     required="true"/>
+
+                        <p:outputLabel value="Category"/>
+                        <p:inputText value="#{feeSetupBean.feeType.category}"/>
+
+                        <p:outputLabel value="Optional"/>
+                        <p:selectBooleanCheckbox
+                            value="#{feeSetupBean.feeType.optional}"/>
+
+                    </h:panelGrid>
+
+                    <br/>
+
+                    <p:commandButton value="Save"
+                                     actionListener="#{feeSetupBean.saveFeeType}"
+                                     update="@form"/>
+
+                    <p:commandButton value="New"
+                                     process="@this"
+                                     actionListener="#{feeSetupBean.resetForm}"
+                                     update="@form"
+                                     styleClass="ui-button-secondary"/>
+
+                </p:panel>
+
+                <br/>
+
+                <p:dataTable value="#{feeSetupBean.feeTypes}"
+                             var="f"                 >
+
+                    <p:column headerText="Code">
+                        #{f.feeCode}
+                    </p:column>
+
+                    <p:column headerText="Description">
+                        #{f.description}
+                    </p:column>
+
+                    <p:column headerText="Category">
+                        #{f.category}
+                    </p:column>
+
+                    <p:column headerText="Optional">
+                        <h:outputText value="#{f.optional ? 'Yes' : 'No'}"/>
+                    </p:column>
+
+                    <p:column headerText="Actions" width="180">
+
+                        <p:commandButton value="Edit"
+                                         process="@this"
+                                         actionListener="#{feeSetupBean.editFeeType(f)}"
+                                         update="@form"/>
+
+                        <p:commandButton value="Delete"
+                                         process="@this"
+                                         actionListener="#{feeSetupBean.deleteFeeType(f)}"
+                                         update="@form"
+                                         styleClass="ui-button-danger">
+
+                            <p:confirm header="Confirmation"
+                                       message="Delete this fee type?"
+                                       icon="pi pi-exclamation-triangle"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+                <p:confirmDialog global="true"
+                                 showEffect="fade"
+                                 hideEffect="fade">
+
+                    <p:commandButton value="Yes"
+                                     type="button"
+                                     styleClass="ui-confirmdialog-yes"/>
+
+                    <p:commandButton value="No"
+                                     type="button"
+                                     styleClass="ui-confirmdialog-no ui-button-secondary"/>
+
+                </p:confirmDialog>
+
+            </h:form>
+    </ui:define>
+
+</ui:composition>

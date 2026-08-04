@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout-registrar.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+
+        <h:form id="programForm" class="ui-fluid">
+
+            <p:growl id="growl" showDetail="true" life="3000"/>
+
+            <!-- PAGE HEADER -->
+            <div class="p-mb-3">
+                <h2>🎓 College Programs Management</h2>
+                <span class="ui-text-muted">
+                    Create, update, and manage academic programs
+                </span>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="p-grid">
+
+                <!-- LEFT : PROGRAM FORM -->
+                <div class="p-col-12 p-lg-4">
+
+                    <p:panel header="📄 Program Details"
+                             styleClass="ui-panel-shadow">
+
+                        <div class="p-field">
+                            <p:outputLabel for="code" value="Program Code"/>
+                            <p:inputText id="code"
+                                         value="#{programBean.program.program_code}"
+                                         required="true"
+                                         placeholder="e.g. BSIT"/>
+                        </div>
+
+                        <div class="p-field">
+                            <p:outputLabel for="name" value="Program Name"/>
+                            <p:inputText id="name"
+                                         value="#{programBean.program.program_name}"
+                                         required="true"
+                                         placeholder="Bachelor of Science in IT"/>
+                        </div>
+
+                        <div class="p-d-flex p-jc-end p-mt-3">
+                            <p:commandButton value="Save"
+                                             icon="ui-icon-disk"
+                                             action="#{programBean.saveProgram}"
+                                             update="programTable growl programForm"
+                                             styleClass="ui-button-success"/>
+
+                            <p:spacer width="5"/>
+
+                            <p:commandButton value="Clear"
+                                             icon="ui-icon-refresh"
+                                             actionListener="#{programBean.clearProgram}"
+                                             update="programForm"
+                                             styleClass="ui-button-secondary"/>
+                        </div>
+
+                    </p:panel>
+
+                </div>
+
+                <!-- RIGHT : PROGRAM LIST -->
+                <div class="p-col-12 p-lg-8">
+
+                    <p:panel header="📋 Program List"
+                             styleClass="ui-panel-shadow">
+
+                   
+
+                        <p:dataTable id="programTable"
+                                     value="#{programBean.programList}"
+                                     var="p"
+                                     paginator="true"
+                                     rows="10"
+                                     emptyMessage="No programs found">
+
+                            <p:column headerText="Code" style="width:120px">
+                                #{p.program_code}
+                            </p:column>
+
+                            <p:column headerText="Program Name">
+                                #{p.program_name}
+                            </p:column>
+
+                            <p:column headerText="Actions"
+                                      style="width:150px;text-align:center">
+
+                                <p:commandButton icon="ui-icon-pencil"
+                                                 title="Edit"
+                                                 actionListener="#{programBean.editProgram(p)}"
+                                                 update="programForm"
+                                                 styleClass="ui-button-info"/>
+
+                                <p:spacer width="5"/>
+
+                                <p:commandButton icon="ui-icon-trash"
+                                                 title="Delete"
+                                                 actionListener="#{programBean.confirmDelete(p)}"
+                                                 oncomplete="PF('deleteDialog').show()"
+                                                 styleClass="ui-button-danger"/>
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+                </div>
+
+            </div>
+
+            <!-- CONFIRM DELETE -->
+            <p:confirmDialog widgetVar="deleteDialog"
+                             header="Confirm Deletion"
+                             message="Are you sure you want to delete this program?"
+                             severity="warn">
+
+                <p:commandButton value="Yes"
+                                 icon="ui-icon-check"
+                                 action="#{programBean.deleteProgramConfirmed}"
+                                 update="programTable growl programForm"
+                                 oncomplete="PF('deleteDialog').hide()"
+                                 styleClass="ui-button-danger"/>
+
+                <p:commandButton value="No"
+                                 icon="ui-icon-close"
+                                 type="button"
+                                 onclick="PF('deleteDialog').hide()"
+                                 styleClass="ui-button-secondary"/>
+            </p:confirmDialog>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

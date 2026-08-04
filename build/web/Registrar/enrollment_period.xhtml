@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template/registrar-layout.xhtml">
+
+        <ui:define name="content">
+
+            <h:form id="periodForm" class="ui-fluid">
+
+                <!-- ================= PAGE HEADER ================= -->
+                <div style="margin-bottom:20px">
+                    <h2>📅 Enrollment Period Management</h2>
+                    <p style="color:#6c757d;margin-top:5px">
+                        Control the active enrollment schedule for students
+                    </p>
+                </div>
+
+                <!-- ================================================= -->
+                <!-- CURRENT ENROLLMENT PERIOD CARD -->
+                <!-- ================================================= -->
+                <p:panel header="📌 Current Enrollment Period"
+                         styleClass="ui-panel-shadow"
+                         style="margin-bottom:25px">
+
+                    <div class="p-grid p-align-center">
+
+                        <div class="p-col-12 p-md-3">
+                            <strong>Academic Year: </strong>
+                            <h:outputText value="#{enrollmentPeriodBean.currentPeriod.academicYear}" />
+                        </div>
+
+                        <div class="p-col-12 p-md-3">
+                            <strong>Semester: </strong>
+                            <h:outputText value="#{enrollmentPeriodBean.currentPeriod.semester}" />
+                        </div>
+
+                        <div class="p-col-12 p-md-3">
+                            <strong>Status: </strong>
+                            <h:outputText value="#{enrollmentPeriodBean.currentPeriod.isOpen ? 'OPEN' : 'CLOSED'}"
+                                          style="
+                                          font-weight:bold;
+                                          color: #{enrollmentPeriodBean.currentPeriod.isOpen ? '#28a745' : '#dc3545'};
+                                          "/>
+                        </div>
+
+                        <!-- ACTION -->
+                        <div class="p-col-12 p-md-3" style="text-align:right">
+
+                            <p:commandButton value="Close Enrollment"
+                                             icon="pi pi-lock"
+                                             action="#{enrollmentPeriodBean.closeEnrollment}"
+                                             update="@form messages"
+                                             styleClass="ui-button-danger"
+                                             rendered="#{enrollmentPeriodBean.currentPeriod.isOpen}">
+
+                                <p:confirm header="Confirm Action"
+                                           message="Are you sure you want to close the current enrollment period?"
+                                           icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
+
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+                <!-- ================================================= -->
+                <!-- OPEN NEW ENROLLMENT CARD -->
+                <!-- ================================================= -->
+                <p:panel header="⚙️ Open New Enrollment Period"
+                         styleClass="ui-panel-shadow">
+
+                    <p:messages id="messages" showDetail="true" closable="true" />
+
+                    <div class="p-grid">
+
+                        <!-- Academic Year -->
+                        <div class="p-col-12 p-md-6">
+                            <p:outputLabel for="acadYear" value="Academic Year" />
+                            <p:inputText id="acadYear"
+                                         value="#{enrollmentPeriodBean.academicYear}"
+                                         placeholder="e.g. 2025-2026" />
+                        </div>
+
+                        <!-- Semester -->
+                        <div class="p-col-12 p-md-6">
+                            <p:outputLabel for="semester" value="Semester" />
+                            <p:selectOneMenu id="semester"
+                                             value="#{enrollmentPeriodBean.semester}">
+                                <f:selectItem itemLabel="Select Semester" itemValue="" />
+                                <f:selectItem itemLabel="1st Semester" itemValue="1st" />
+                                <f:selectItem itemLabel="2nd Semester" itemValue="2nd" />
+                                <f:selectItem itemLabel="Summer" itemValue="Summer" />
+                            </p:selectOneMenu>
+                        </div>
+
+                    </div>
+
+                    <!-- ACTION BUTTON -->
+                    <div style="margin-top:20px">
+
+                        <p:commandButton value="Open Enrollment"
+                                         icon="pi pi-check"
+                                         action="#{enrollmentPeriodBean.openEnrollment}"
+                                         update="@form messages"
+                                         styleClass="ui-button-success">
+
+                            <p:confirm header="Confirm Action"
+                                       message="Open a new enrollment period?"
+                                       icon="pi pi-info-circle"/>
+                        </p:commandButton>
+
+                    </div>
+
+                </p:panel>
+
+                <!-- ================= CONFIRM DIALOG ================= -->
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                </p:confirmDialog>
+
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+</html>

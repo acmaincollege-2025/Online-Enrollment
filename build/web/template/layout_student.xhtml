@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Student Portal</title>
+
+        <h:outputStylesheet>
+            .topbar {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            }
+
+            .logo {
+            font-size: 22px;
+            font-weight: bold;
+            }
+
+            .user-info {
+            float:right;
+            }
+
+            .content {
+            padding:20px;
+            }
+
+            .footer {
+            background:#f4f4f4;
+            padding:10px;
+            text-align:center;
+            margin-top:20px;
+            }
+            .dashboard-link {
+            text-decoration: none !important;
+            color: inherit !important;
+
+            }
+
+            .dashboard-link:hover {
+            text-decoration: none !important;
+            color: inherit !important;
+            }
+
+            .dashboard-link:visited {
+            color: inherit !important;
+            }
+        </h:outputStylesheet>
+    </h:head>
+
+    <h:body>
+        <h:form>
+            <!-- TOP BAR -->
+            <div class="topbar">
+
+                <span class="logo">
+                    Student Portal
+                </span>
+
+                <p:commandLink action="#{loginBean.logout}" styleClass="dashboard-link">
+                    <span class="user-info">
+                        Welcome,
+                        #{studentLoginBean.loggedInStudent.studentName}
+                    </span>
+                </p:commandLink>
+
+
+            </div>
+
+            <!-- MENU -->
+
+
+            <p:menubar>
+
+                <p:menuitem value="Dashboard"
+                            outcome="/Student/dashboard"/>
+
+                <p:menuitem value="Enroll"
+                            outcome="/Student/enrollment-student"/>
+                
+                <p:menuitem value="Add/Drop"
+                            outcome="/Student/student-add-drop"/>
+                
+                <p:menuitem value="Payments"
+                            outcome="/Student/student-payment-history"/>
+
+                <p:menuitem value="Profile"
+                            actionListener="#{studentBean.loadProfile}"
+                            oncomplete="PF('editProfileDlg').show();" />
+
+                <p:menuitem value="Logout"
+                            action="#{loginBean.logout}"
+                            icon="ui-icon-power"/>
+
+            </p:menubar>
+
+        </h:form>
+
+        <!-- PAGE CONTENT -->
+        <div class="content">
+
+            <ui:insert name="content"/>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Online Enrollment System
+        </div>
+
+    </h:body>
+
+</html>

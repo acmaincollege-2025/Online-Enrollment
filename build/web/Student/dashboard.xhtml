@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout_student.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+
+
+    <ui:define name="content">
+        <h:outputStylesheet>
+            .dashboard-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.2s ease-in-out;
+            min-height: 140px;
+            }
+
+            .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            }
+
+            .dashboard-card h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+            }
+
+            .dash-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+
+            min-height: 170px;
+            }
+
+            .dash-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            }
+
+            .dash-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            display: block;
+            }
+
+            /* Titles */
+            .dash-card h3 {
+            margin: 10px 0 5px;
+            font-size: 18px;
+            }
+
+            .dash-card p {
+            font-size: 13px;
+            color: #777;
+            margin: 0;
+            }
+
+            /* Optional color accents */
+            .enroll-card .dash-icon { color: #4CAF50; }
+            .assessment-card .dash-icon { color: #2196F3; }
+            .payment-card .dash-icon { color: #FF9800; }
+            .profile-card .dash-icon { color: #9C27B0; }
+        </h:outputStylesheet>
+
+        <h:form id="dashboardForm">
+            <div class="ui-g">
+
+                <div class="ui-g-12">
+                    <h2>Welcome Back!</h2>
+                </div>
+
+                <!-- Enroll -->
+                <div class="ui-g-3">
+                    <p:commandLink action="/Student/enrollment-student"
+                                   styleClass="card-link">
+
+                        <div class="dash-card">
+                            <i class="pi pi-user-plus dash-icon"></i>
+                            <h3>🎓 </h3>
+                            <h3>Assessment and Enrollment</h3>
+                            <p>Start or continue enrollment</p>
+                        </div>
+
+                    </p:commandLink>
+                </div>
+
+
+
+
+                <!-- Change Password -->
+                <div class="ui-g-3">
+                    <p:commandLink onclick="PF('changePasswordDlg').show();"
+                                   styleClass="card-link">
+
+                        <div class="dash-card">
+                            <i class="pi pi-user-plus dash-icon"></i>
+                            <h3>🔑 </h3>
+                            <h3>Password Management</h3>
+                            <p>Change or Update Password</p>
+                        </div>
+
+                    </p:commandLink>
+
+                </div>
+
+
+
+                <!-- Edit Profile -->
+                <div class="ui-g-3">
+                    <p:commandLink actionListener="#{studentBean.loadProfile}"
+                                   onclick="PF('editProfileDlg').show();"
+                                   styleClass="card-link">
+
+                        <div class="dash-card">
+                            <i class="pi pi-user-plus dash-icon"></i>
+                            <h3>👤 </h3>
+                            <h3>Profile Management</h3>
+                            <p>Update Student Information</p>
+                        </div>
+
+                    </p:commandLink>
+                </div>
+
+
+
+            </div>
+
+            <!-- Edit Profile -->
+            <p:dialog id="editProfileDialog"
+                      header="Edit Student Profile"
+                      widgetVar="editProfileDlg"
+                      modal="true"
+                      resizable="false"
+                      width="700">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <h:outputText value="First Name" />
+                    <p:inputText value="#{studentBean.selectedStudent.firstname}" />
+
+                    <h:outputText value="Middle Name" />
+                    <p:inputText value="#{studentBean.selectedStudent.middlename}" />
+
+                    <h:outputText value="Last Name" />
+                    <p:inputText value="#{studentBean.selectedStudent.lastname}" />
+
+                    <h:outputText value="Email" />
+                    <p:inputText value="#{studentBean.selectedStudent.email}" />
+
+                    <h:outputText value="Mobile No." />
+                    <p:inputText value="#{studentBean.selectedStudent.contactno}" />
+
+                    <h:outputText value="Address" />
+                    <p:inputTextarea value="#{studentBean.selectedStudent.address}"
+                                     rows="3"
+                                     cols="30"/>
+
+                    <h:outputText value="Birth Date" />
+                    <p:calendar value="#{studentBean.selectedStudent.dob}"
+                                pattern="MM/dd/yyyy" />
+
+                </h:panelGrid>
+
+                <f:facet name="footer">
+
+                    <p:commandButton value="Save"
+                                     actionListener="#{studentBean.updateProfile}"
+                                     update="@this"
+                                     oncomplete="PF('editProfileDlg').hide();"/>
+
+                    <p:commandButton value="Cancel"
+                                     type="button"
+                                     onclick="PF('editProfileDlg').hide();" />
+
+                </f:facet>
+
+            </p:dialog>
+
+            <!--Change Password -->
+
+
+
+            <p:dialog id="changePasswordDialog"
+                      header="Change Password"
+                      widgetVar="changePasswordDlg"
+                      modal="true"
+                      resizable="false"
+                      width="450">
+
+                <p:messages id="passwordMessages" showDetail="true"/>
+
+                <p:panelGrid columns="2" layout="grid">
+
+                    <h:outputText value="Current Password" />
+                    <p:password value="#{studentBean.currentPassword}"
+                                feedback="false"/>
+
+                    <h:outputText value="New Password" />
+                    <p:password value="#{studentBean.newPassword}"
+                                feedback="true"/>
+
+                    <h:outputText value="Confirm Password" />
+                    <p:password value="#{studentBean.confirmPassword}"
+                                feedback="false"/>
+
+                </p:panelGrid>
+
+                <f:facet name="footer">
+
+                    <p:commandButton value="Change Password"
+                                     action="#{studentBean.changePassword}"
+                                     update="passwordMessages"
+                                     process="@form"/>
+
+                    <p:commandButton value="Cancel"
+                                     type="button"
+                                     onclick="PF('changePasswordDlg').hide();" />
+
+                </f:facet>
+
+            </p:dialog>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

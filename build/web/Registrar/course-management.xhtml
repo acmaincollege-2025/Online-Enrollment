@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    template="/template/registrar-layout.xhtml">
+
+    <ui:define name="content">
+
+        <h:form id="courseForm" enctype="multipart/form-data">
+
+            <p:panel header="Course Management"
+                     style="margin-bottom:20px">
+
+                <p:messages id="msgs"
+                            closable="true"
+                            showDetail="true"/>
+
+                <p:panelGrid columns="4"
+                             styleClass="ui-fluid">
+
+                    <!-- COURSE CODE -->
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="course_code"
+                                           value="Course Code:"/>
+                        </p:column>
+
+                        <p:column>
+                            <p:inputText id="course_code"
+                                         value="#{courseBean.course.courseCode}"
+                                         required="true"/>
+                        </p:column>
+
+                        <!-- COURSE TITLE -->
+                        <p:column>
+                            <p:outputLabel for="course_title"
+                                           value="Course Title:"/>
+                        </p:column>
+
+                        <p:column>
+                            <p:inputText id="course_title"
+                                         value="#{courseBean.course.courseTitle}"
+                                         required="true"/>
+                        </p:column>
+                    </p:row>
+
+                    <!-- UNITS -->
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel for="units"
+                                           value="Units:"/>
+                        </p:column>
+
+                        <p:column>
+                            <p:spinner id="units"
+                                       value="#{courseBean.course.units}"
+                                       min="1"
+                                       max="10"
+                                       required="true"/>
+                        </p:column>
+
+                        <p:column/>
+                        <p:column/>
+                    </p:row>
+
+                </p:panelGrid>
+
+                <p:separator/>
+
+                <p:commandButton
+                    value="#{courseBean.course.courseId == 0 ? '💾 Add Course' : '✏ Update Course'}"
+                    action="#{courseBean.saveCourse}"
+                    update="courseForm"/>
+
+                <p:commandButton
+                    value="🔄 Reset"
+                    action="#{courseBean.clearForm}"
+                    update="courseForm"
+                    styleClass="p-button-secondary"/>
+
+            </p:panel>
+
+            <!-- COURSE LIST -->
+            <p:panel header="Course Catalog">
+
+                <p:dataTable value="#{courseBean.courseList}"
+                             var="c"
+                             paginator="true"
+                             rows="10"
+                             selectionMode="single"
+                             selection="#{courseBean.selectedCourse}"
+                             rowKey="#{c.courseId}">
+
+                    <p:ajax event="rowSelect"
+                            update="courseForm"/>
+
+                    <p:column headerText="Code">
+                        #{c.courseCode}
+                    </p:column>
+
+                    <p:column headerText="Title">
+                        #{c.courseTitle}
+                    </p:column>
+
+                    <p:column headerText="Units">
+                        #{c.units}
+                    </p:column>
+
+                </p:dataTable>
+
+                <p:separator/>
+
+                <p:commandButton value="✏ Edit Selected"
+                                 action="#{courseBean.editSelected}"
+                                 update="courseForm"/>
+
+                <p:commandButton value="🗑 Delete Selected"
+                                 action="#{courseBean.deleteSelected}"
+                                 update="courseForm"
+                                 styleClass="p-button-danger"/>
+
+            </p:panel>
+
+            <p:spacer height="20"/>
+
+            <!-- EXCEL UPLOAD -->
+            <p:panel header="Upload Course Catalog (.xlsx)">
+
+                <p:fileUpload mode="simple"
+                              value="#{courseBean.file}"/>
+
+                <p:commandButton value="📤 Upload Excel"
+                                 action="#{courseBean.uploadCourses}"
+                                 update="courseForm"/>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

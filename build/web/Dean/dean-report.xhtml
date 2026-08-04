@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/template/layout-dean.xhtml">
+
+        <ui:define name="content">
+
+            <h:form id="deanReportForm">
+
+                <!-- ================= FILTER PANEL ================= -->
+                <p:panel header="Enrollment Reports" styleClass="ui-panel-shadow">
+                    <p:panelGrid columns="6" layout="grid"
+                                 columnClasses="ui-g-12 ui-md-4,
+                                 ui-g-12 ui-md-4,
+                                 ui-g-12 ui-md-4">
+
+                        <h:panelGroup>
+                            <h:outputLabel value="Year" />
+                            <p:selectOneMenu value="#{enrollmentBean.selectedAcademicYear}"
+                                             style="width:100%">
+                                <f:selectItem itemLabel="All Years" itemValue="" />
+                                <f:selectItem itemLabel="1st Year" itemValue="1" />
+                                <f:selectItem itemLabel="2nd Year" itemValue="2" />
+                                <f:selectItem itemLabel="3rd Year" itemValue="3" />
+                                <f:selectItem itemLabel="4th Year" itemValue="4" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <h:outputLabel value="Semester" />
+                            <p:selectOneMenu value="#{enrollmentBean.selectedSemester}" style="width:100%">
+                                <f:selectItem itemLabel="Select Semester" itemValue="" />
+                                <f:selectItem itemLabel="1st" itemValue="1st" />
+                                <f:selectItem itemLabel="2nd" itemValue="2nd" />
+                                <f:selectItem itemLabel="Summer" itemValue="Summer" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <h:outputLabel value="Program" />
+                            <p:selectOneMenu value="#{enrollmentBean.selectedStudent.programId}" style="width:100%">
+                                <f:selectItem itemLabel="Select Program" itemValue="" />
+                                <f:selectItems value="#{programBean.programList}"
+                                               var="p"
+                                               itemLabel="#{p.program_name}"
+                                               itemValue="#{p.program_code}" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                    </p:panelGrid>
+
+
+                    <br/>
+
+                    <p:commandButton value="Generate Report"
+                                     icon="ui-icon-search"
+                                     actionListener="#{enrollmentBean.loadDeanReport}"
+                                     update="summaryPanel reportTable"
+                                     styleClass="ui-priority-primary"/>
+
+                </p:panel>
+
+                <br/>
+
+                <!-- ================= SUMMARY ================= -->
+                <p:panel id="summaryPanel" header="Summary">
+
+                    <h:panelGrid columns="1" style="text-align:center" width="100%">
+                        <h2>Total Enrollments</h2>
+                        <h1>#{enrollmentBean.totalEnrollments}</h1>
+                    </h:panelGrid>
+
+                </p:panel>
+
+                <br/>
+
+                <!-- ================= DATA TABLE ================= -->
+                <p:panel header="Enrollment List">
+
+                    <p:dataTable id="reportTable"
+                                 value="#{enrollmentBean.deanEnrollments}"
+                                 var="e"
+                                 paginator="true"
+                                 rows="10"
+                                 emptyMessage="No records found">
+
+                        <p:column headerText="Student No">
+                            #{e.studno}
+                        </p:column>
+
+                        <p:column headerText="Academic Year">
+                            #{e.academic_year}
+                        </p:column>
+
+                        <p:column headerText="Semester">
+                            #{e.semester}
+                        </p:column>
+
+                        <p:column headerText="Status">
+                            #{e.status}
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <br/>
+
+                    <p:commandButton value="Print"
+                                     icon="ui-icon-print"
+                                     onclick="window.print();"
+                                     type="button"/>
+
+                </p:panel>
+
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+</html>

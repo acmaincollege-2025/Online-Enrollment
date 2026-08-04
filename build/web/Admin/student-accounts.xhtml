@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/admin-layout.xhtml">
+
+    <ui:define name="content">
+
+        <h:form id="credentialsForm">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">
+                        🔐 Student Credentials Management
+                    </h2>
+
+                    <div class="page-subtitle">
+                        Manage student portal accounts, usernames, and passwords
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH PANEL -->
+            <div class="dashboard-card">
+
+                <div class="card-header">
+                    Search Student Account
+                </div>
+
+                <div class="ui-g">
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:inputText
+                            value="#{studentCredentialsAdminBean.searchKeyword}"
+                            placeholder="Student No / Name / Username"
+                            style="width:100%;" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-2">
+                        <p:commandButton
+                            value="🔍 Search"
+                            action="#{studentCredentialsAdminBean.search}"
+                            update="credentialsTable messages"
+                            styleClass="btn-primary"
+                            style="width:100%;" />
+                    </div>
+
+                    <div class="ui-g-12 ui-md-2">
+                        <p:commandButton
+                            value="🔄 Refresh"
+
+                            action="#{studentCredentialsAdminBean.loadCredentials}"
+                            update="@form"
+                            process="@this"
+                            styleClass="ui-button-secondary"
+                            style="width:100%;" />
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p:messages id="messages" showDetail="true" closable="true" />
+
+            <!-- CREDENTIAL TABLE -->
+            <div class="dashboard-card">
+
+                <div class="card-header">
+                    Student Accounts
+                </div>
+
+                <p:dataTable
+                    id="credentialsTable"
+                    value="#{studentCredentialsAdminBean.credentialsList}"
+                    var="credential"
+                    paginator="true"
+                    rows="10"
+                    rowKey="#{credential.id}"
+                    selectionMode="single"
+                    selection="#{studentCredentialsAdminBean.selectedCredential}"
+                    emptyMessage="No student credentials found">
+
+                    <p:ajax event="rowSelect"
+                            update="@form" />
+
+                    <p:column headerText="Student No">
+                        #{credential.studentNo}
+                    </p:column>
+
+                    <p:column headerText="Student Name">
+                        #{credential.studentName}
+                    </p:column>
+
+
+                    <p:column headerText="Status">
+
+                        <h:panelGroup rendered="#{credential.status eq 'ACTIVE'}">
+                            <span class="badge badge-success">
+                                ACTIVE
+                            </span>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{credential.status ne 'ACTIVE'}">
+                            <span class="badge badge-danger">
+                                INACTIVE
+                            </span>
+                        </h:panelGroup>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+            <!-- ACTIONS -->
+            <p:outputPanel id="actionPanel">
+
+                <div class="dashboard-card"
+                     rendered="#{not empty studentCredentialsAdminBean.selectedCredential}">
+
+                    <div class="card-header">
+                        Account Actions
+                    </div>
+
+                    <div class="ui-g">
+
+                        <div class="ui-g-12 ui-md-3">
+
+                            <p:commandButton
+                                value="🔓🔑 Reset Password"
+                                action="#{studentCredentialsAdminBean.resetPassword}"
+                                update="@form"
+                                styleClass="ui-button-warning"
+                                style="width:100%;">
+
+                                <p:confirm
+                                    header="☑️ Confirmation"
+                                    message="Reset password to default?"
+                                    icon="pi pi-exclamation-triangle"/>
+
+                            </p:commandButton>
+
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+
+                            <p:commandButton
+                                value="🪪 Activate / Deactivate"
+                                action="#{studentCredentialsAdminBean.toggleStatus}"
+                                update="@form"
+                                styleClass="btn-primary"
+                                style="width:100%;" />
+
+                        </div>
+
+                        <div class="ui-g-12 ui-md-3">
+
+                            <p:commandButton
+                                value="🗑 Delete Account"
+                                action="#{studentCredentialsAdminBean.delete}"
+                                update="@form"
+                                styleClass="ui-button-danger"
+                                rendered="#{sessionBean.role eq 'SYSTEM_ADMIN'}">
+
+                                <p:confirm
+                                    header="Delete Account"
+                                    message="Are you sure?"
+                                    icon="pi pi-exclamation-triangle"/>
+
+                            </p:commandButton>
+
+                        </div>
+
+                    </div>
+
+                    <hr/>
+
+                    <div class="selected-info">
+
+                        <strong>Selected Student:</strong>
+
+                        #{studentCredentialsAdminBean.selectedCredential.studentNo}
+                        -
+                        #{studentCredentialsAdminBean.selectedCredential.studentName}
+
+                    </div>
+
+                </div>
+
+            </p:outputPanel>
+
+            <!-- CONFIRM DIALOG -->
+            <p:confirmDialog global="true"
+                             showEffect="fade"
+                             hideEffect="fade">
+
+                <p:commandButton
+                    value="Yes"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes" />
+
+                <p:commandButton
+                    value="No"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-secondary" />
+
+            </p:confirmDialog>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

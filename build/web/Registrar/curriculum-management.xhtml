@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+        <style>
+            .form-label {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+
+            .ui-panel .ui-panel-content {
+                padding: 20px;
+            }
+
+            .ui-selectonemenu,
+            .ui-inputfield,
+            .ui-spinner {
+                width: 100% !important;
+            }
+
+            .ui-g > div {
+                margin-bottom: 15px;
+            }
+        </style>
+        <ui:composition template="/template/layout-registrar.xhtml">
+
+            <ui:define name="content">
+
+                <h:form id="curriculumForm">
+
+                    <p:panel header="Curriculum Management" style="margin-bottom:20px;">
+
+                        <p:messages id="msgs" closable="true" />
+
+                        <div class="ui-g ui-fluid">
+
+                            <!-- Program -->
+                            <div class="ui-g-12 ui-md-6">
+                                <p:outputLabel for="program" value="Program" />
+                                <p:selectOneMenu id="program"
+                                                 value="#{programCourseBean.programCourse.programId}"
+                                                 style="width:100%">
+                                    <f:selectItem itemLabel="Select Program" itemValue="#{null}" />
+                                    <f:selectItems value="#{programCourseBean.programList}"
+                                                   var="p"
+                                                   itemLabel="#{p.program_name}"
+                                                   itemValue="#{p.program_id}" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- Course -->
+                            <div class="ui-g-12 ui-md-6">
+                                <p:outputLabel for="course" value="Course" />
+                                <p:selectOneMenu id="course"
+                                                 value="#{programCourseBean.programCourse.courseId}"
+                                                 style="width:100%">
+                                    <f:selectItem itemLabel="Select Course" itemValue="#{null}" />
+                                    <f:selectItems value="#{programCourseBean.courseList}"
+                                                   var="c"
+                                                   itemLabel="#{c.courseCode} - #{c.courseTitle}"
+                                                   itemValue="#{c.courseId}" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- Year Level -->
+                            <div class="ui-g-12 ui-md-6">
+                                <p:outputLabel for="yearLevel" value="Year Level" />
+                                <p:selectOneMenu id="yearLevel"
+                                                 value="#{programCourseBean.programCourse.yearLevel}"
+                                                 style="width:100%">
+                                    <f:selectItem itemLabel="1st - First Year" itemValue="1" />
+                                    <f:selectItem itemLabel="2nd - Second Year" itemValue="2" />
+                                    <f:selectItem itemLabel="3rd - Third Year" itemValue="3" />
+                                    <f:selectItem itemLabel="4th-  Forth Year" itemValue="4" />
+                                </p:selectOneMenu>
+                                <!--         <p:spinner id="yearLevel"
+                                                    value=""
+                                                    min="1"
+                                                    max="5"
+                                                    style="width:100%" /> -->
+                            </div>
+
+                            <!-- Semester -->
+                            <div class="ui-g-12 ui-md-6">
+                                <p:outputLabel for="semester" value="Semester" />
+                                <p:selectOneMenu id="semester"
+                                                 value="#{programCourseBean.programCourse.semester}"
+                                                 style="width:100%">
+                                    <f:selectItem itemLabel="1st Semester" itemValue="1st" />
+                                    <f:selectItem itemLabel="2nd Semester" itemValue="2nd" />
+                                    <f:selectItem itemLabel="Summer" itemValue="Summer" />
+                                </p:selectOneMenu>
+                            </div>
+
+                            <!-- Curriculum Year -->
+                            <div class="ui-g-12 ui-md-6">
+                                <p:outputLabel for="currYear" value="Curriculum Year" />
+                                <p:inputText id="currYear"
+                                             value="#{programCourseBean.programCourse.currYear}"
+                                             placeholder="2025" />
+                            </div>
+
+                        </div>
+
+                        <p:separator />
+
+                        <p:commandButton
+                            value="#{programCourseBean.programCourse.programCourseId == 0 ?
+                                     '💾 Save Curriculum' :
+                                     '✏ Update Curriculum'}"
+                            icon="pi pi-save"
+                            action="#{programCourseBean.save}"
+                            update="curriculumForm" />
+
+                        <p:spacer width="10"/>
+
+                        <p:commandButton
+                            value="Reset"
+                            icon="pi pi-refresh"
+                            action="#{programCourseBean.clearForm}"
+                            update="curriculumForm"
+                            styleClass="ui-button-secondary"/>
+
+                    </p:panel>
+                    <p:spacer height="20"/>
+
+                    <!-- Curriculum List -->
+
+                    <p:panel header="Curriculum Records">
+
+                        <p:dataTable
+                            id="curriculumTable"
+                            value="#{programCourseBean.curriculumList}"
+                            var="pc"
+                            paginator="true"
+                            rows="15"
+                            selectionMode="single"
+                            selection="#{programCourseBean.selectedProgramCourse}"
+                            rowKey="#{pc.programCourseId}">
+
+                            <p:ajax event="rowSelect"
+                                    update="curriculumForm"/>
+
+                            <p:column headerText="Program">
+                                #{pc.programName}
+                            </p:column>
+
+                            <p:column headerText="Course Code">
+                                #{pc.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Course Title">
+                                #{pc.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{pc.units}
+                            </p:column>
+
+                            <p:column headerText="Year">
+                                #{pc.yearLevel}
+                            </p:column>
+
+                            <p:column headerText="Semester">
+                                #{pc.semester}
+                            </p:column>
+
+                            <p:column headerText="Curriculum">
+                                #{pc.currYear}
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <p:separator />
+
+                        <p:commandButton
+                            value="✏ Edit Selected"
+                            action="#{programCourseBean.edit}"
+                            update="curriculumForm"/>
+
+                        <p:commandButton
+                            value="🗑 Delete Selected"
+                            action="#{programCourseBean.delete}"
+                            update="curriculumForm"
+                            styleClass="p-button-danger"/>
+
+                    </p:panel>
+
+                </h:form>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

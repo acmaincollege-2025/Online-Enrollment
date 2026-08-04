@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    template="/template/admin-layout.xhtml">
+
+    <!-- NAVIGATION -->
+    <ui:define name="nav">
+        <h:form>
+            <p:link outcome="index" value="🏠 Home" styleClass="p-text-bold" />
+        </h:form>
+    </ui:define>
+
+    <!-- MAIN CONTENT -->
+    <ui:define name="content">
+        <h:outputStylesheet library="primefaces" name="primeicons/primeicons.css" />
+
+        <h:form id="userForm" prependId="false">
+            <!-- MUST BE INSIDE THE FORM (this fixes your error) -->
+            <p:confirmDialog global="true"
+                             showEffect="fade"
+                             hideEffect="fade"
+                             header="Confirmation"
+                             severity="alert"
+                             appendTo="@(body)">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes p-button-danger" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no p-button-secondary" />
+            </p:confirmDialog>
+            <!-- GROWL FOR NOTIFICATIONS -->
+            <p:growl id="growl" showDetail="true" life="3500" />
+            <!-- USER MANAGEMENT PANEL -->
+            <p:panel header="User Management" styleClass="maroon-header" style="border-radius:10px;">
+                <p:messages id="msgs" closable="true" showDetail="true" />
+
+                <p:panelGrid columns="2" layout="grid"
+                             columnClasses="labelCol,valueCol"
+                             styleClass="p-fluid p-formgrid p-grid p-mt-3">
+
+                    <p:outputLabel for="username" value="Username:" />
+                    <p:inputText id="username" value="#{loginBean.user.username}" required="true" />
+
+                    <p:outputLabel for="password" value="Password:" />
+                    <p:password id="password" value="#{loginBean.user.password}"
+                                redisplay="true" required="true" />
+
+                    <p:outputLabel for="lastname" value="Last Name:" />
+                    <p:inputText id="lastname" value="#{loginBean.user.lastname}" required="true" />
+
+                    <p:outputLabel for="firstname" value="First Name:" />
+                    <p:inputText id="firstname" value="#{loginBean.user.firstname}" required="true" />
+
+                    <p:outputLabel for="role" value="Role:" />
+                    <p:selectOneMenu id="role" value="#{loginBean.user.role}" required="true">
+                        <f:selectItem itemLabel="Select Role" itemValue="" noSelectionOption="true" />
+                        <f:selectItem itemLabel="Registrar" itemValue="Registrar" />
+                        <f:selectItem itemLabel="Dean" itemValue="Dean" />
+                        <f:selectItem itemLabel="Admission" itemValue="Admission" />
+                        <f:selectItem itemLabel="Administrator" itemValue="Administrator" />
+                        <f:selectItem itemLabel="Cashier" itemValue="Cashier" />
+                        <f:selectItem itemLabel="Student" itemValue="Student" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="status" value="Status:" />
+                    <p:selectOneMenu id="status" value="#{loginBean.user.status}" required="true">
+                        <f:selectItem itemLabel="Active" itemValue="Active" />
+                        <f:selectItem itemLabel="Inactive" itemValue="Inactive" />
+                    </p:selectOneMenu>
+
+                </p:panelGrid>
+
+                <p:separator/>
+
+                <div class="p-mt-3">
+                    <p:commandButton value="#{loginBean.editMode ? 'Update User' : 'Add User'}"
+                                     icon="pi pi-save"
+                                     action="#{loginBean.saveUser}"
+                                     update=":tblUser:userTable msgs growl"
+                                     oncomplete="PF('growl').show()"
+                                     styleClass="p-button-sm p-button-success p-mr-2" />
+
+                    <p:commandButton value="Reset"
+                                     icon="pi pi-refresh"
+                                     action="#{loginBean.resetForm}"
+                                     update="@form"
+                                     styleClass="p-button-sm p-button-secondary" />
+                </div>
+            </p:panel>
+
+            <p:spacer height="20"/>
+
+
+        </h:form>
+        <h:form id="tblUser">
+            <!-- USER LIST PANEL -->
+            <p:panel header="User List" styleClass="maroon-header" style="border-radius:10px;">
+
+                <!-- GLOBAL SEARCH (calls datatable.filter()) -->
+                <div class="p-input-icon-left p-mb-3">
+                    <i class="pi pi-search" />
+                    <p:inputText id="globalFilter"
+                                 placeholder="Search..."
+                                 onkeyup="PF('userTableWidget').filter()" />
+                </div>
+
+                <p:dataTable id="userTable"
+                             widgetVar="userTableWidget"
+                             value="#{loginBean.userList}"
+                             var="u"
+                             paginator="true" rows="10"
+                             emptyMessage="No users found."
+                             styleClass="p-datatable-striped p-datatable-hover">
+
+                    <p:column headerText="Username" sortBy="#{u.username}" filterBy="#{u.username}" filterMatchMode="contains">
+                        <h:outputText value="#{u.username}" />
+                    </p:column>
+
+                    <p:column headerText="Role" sortBy="#{u.role}" filterBy="#{u.role}" filterMatchMode="contains">
+                        <h:outputText value="#{u.role}" />
+                    </p:column>
+
+                    <p:column headerText="Status" sortBy="#{u.status}" filterBy="#{u.status}" filterMatchMode="contains">
+                        <h:outputText value="#{u.status}" />
+                    </p:column>
+
+                    <p:column headerText="Actions" style="width:150px; text-align:center;">
+
+                        <!-- EDIT BUTTON: loads the row into form for editing -->
+                        <p:commandButton icon="pi pi-pencil"
+                                         title="Edit"
+                                         action="#{loginBean.editUser(u)}"
+                                         update="userForm"
+                                         styleClass="p-button-rounded p-button-warning p-button-sm p-mr-1" />
+
+                        <!-- DELETE BUTTON: uses <p:confirm> which triggers the global confirm dialog -->
+                        <p:commandButton icon="pi pi-trash"
+                                         title="Delete"
+                                         action="#{loginBean.deleteUser(u.id)}"
+                                         update="userTable msgs growl"
+                                         styleClass="p-button-rounded p-button-danger p-button-sm">
+                            <p:confirm header="Confirm Delete"
+                                       message="Delete user #{u.username}?"
+                                       icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+
+                    </p:column>
+                </p:dataTable>
+
+            </p:panel>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

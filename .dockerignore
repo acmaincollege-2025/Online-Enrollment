@@ -1,0 +1,5 @@
+target/*
+!target/ROOT.war
+.git
+.idea
+

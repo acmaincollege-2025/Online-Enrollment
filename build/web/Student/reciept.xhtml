@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <head>
+        <title>Payment Acknowledgment Receipt</title>
+        <style>
+            .receipt-container {
+                width: 600px;
+                margin: auto;
+                border: 1px solid #aaa;
+                padding: 20px;
+                font-family: Arial, sans-serif;
+                background: #fdfdfd;
+            }
+            .header {
+                text-align: center;
+                font-weight: bold;
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            .receipt-details {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .receipt-details td {
+                padding: 8px;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 30px;
+                font-size: 12px;
+                color: #777;
+            }
+            .print-button {
+                margin-top: 20px;
+                text-align: center;
+            }
+            @media print {
+                .print-button {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+
+        <ui:composition template="template/student_layout.xhtml"
+                        xmlns="http://www.w3.org/1999/xhtml"
+                        xmlns:h="http://xmlns.jcp.org/jsf/html"
+                        xmlns:f="http://xmlns.jcp.org/jsf/core"
+                        xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                        xmlns:p="http://primefaces.org/ui">
+
+            <ui:define name="content">
+
+                <h:form id="receiptForm">
+
+                    <h2>🧾 Payment Receipt</h2>
+
+                    <p:messages closable="true"/>
+
+                    <!-- Guard: No receipt -->
+                    <p:panel rendered="#{empty paymentBean.receiptData}">
+                        <h:outputText value="No receipt data available."/>
+                    </p:panel>
+
+                    <!-- Receipt Details -->
+                    <p:panel header="Receipt Details"
+                             rendered="#{not empty paymentBean.receiptData}"
+                             styleClass="ui-card">
+
+                        <h:panelGrid columns="2" cellpadding="8" styleClass="ui-fluid">
+
+                            <h:outputText value="Payment Date:"/>
+                            <h:outputText value="#{paymentBean.receiptData.paymentDate}">
+                                <f:convertDateTime pattern="MMMM dd, yyyy"/>
+                            </h:outputText>
+
+                            <h:outputText value="Payment Mode:"/>
+                            <h:outputText value="#{paymentBean.receiptData.paymentMode}"/>
+
+                            <h:outputText value="Payment Type:"/>
+                            <h:outputText value="#{paymentBean.receiptData.paymentType}"/>
+
+                            <h:outputText value="Amount Paid:"/>
+                            <h:outputText value="₱#{paymentBean.receiptData.amountPaid}">
+                                <f:convertNumber type="currency" currencySymbol="₱"/>
+                            </h:outputText>
+
+                            <h:outputText value="Reference Number:"/>
+                            <h:outputText value="#{paymentBean.receiptData.paymentReferenceNumber}"/>
+
+                        </h:panelGrid>
+
+                        <br/>
+
+                        <!-- Actions -->
+                        <p:commandButton value="Download PDF"
+                                         icon="pi pi-download"
+                                         action="#{paymentBean.downloadPDF}"
+                                         ajax="false"
+                                         styleClass="ui-button-info"/>
+
+                        <p:button value="Back to Payments"
+                                  icon="pi pi-arrow-left"
+                                  outcome="payment"
+                                  styleClass="ui-button-secondary"/>
+
+                    </p:panel>
+
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+
+
+    </body>
+</html>

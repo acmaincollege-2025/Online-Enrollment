@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout_student.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+
+        <h:form id="paymentForm">
+
+            <!-- PAGE TITLE -->
+            <h2>💳 Student Payment History</h2>
+
+            <p:messages  closable="true"/>
+
+            <!-- ================= SUMMARY ================= -->
+            <p:panelGrid columns="3" layout="grid"
+                         styleClass="ui-panelgrid-blank"
+                         style="margin-bottom:20px;text-align:center">
+
+                <p:panel header="Total Assessment">
+                    <h:outputText value="₱ #{paymentBean.totalAssessment}">
+                        <f:convertNumber minFractionDigits="2"/>
+                    </h:outputText>
+                </p:panel>
+
+                <p:panel header="Total Paid">
+                    <h:outputText value="₱ #{paymentBean.totalPaid}">
+                        <f:convertNumber minFractionDigits="2"/>
+                    </h:outputText>
+                </p:panel>
+
+                <p:panel header="Outstanding Balance">
+                    <h:outputText value="₱ #{paymentBean.balance}"
+                                  style="font-weight:bold;color:red">
+                        <f:convertNumber minFractionDigits="2"/>
+                    </h:outputText>
+                </p:panel>
+
+            </p:panelGrid>
+
+            <!-- ================= TOOLBAR ================= -->
+            <p:toolbar style="margin-bottom:10px">
+                <p:toolbarGroup align="right">
+
+                    <p:commandButton value="Print Summary"
+                                     icon="ui-icon-print"
+                                     type="button"
+                                     onclick="PF('printDlg').show()"/>
+
+                    <p:commandButton value="Export Excel"
+                                     icon="ui-icon-document"
+                                     ajax="false">
+                        <p:dataExporter type="xls"
+                                        target="paymentTable"
+                                        fileName="Payment_History"/>
+                    </p:commandButton>
+
+                    <p:commandButton value="Student PDF Copy"
+                                     icon="ui-icon-print"
+                                     ajax="false"
+                                     actionListener="#{paymentBean.exportPaymentHistoryPDF}"/>
+
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <!-- ================= TABLE ================= -->
+            <p:panel header="Payment Records">
+
+                <p:dataTable id="paymentTable"
+                             value="#{paymentBean.paymentHistory}"
+                             var="p"
+                             paginator="true"
+                             rows="10"
+                             selectionMode="single"
+                             rowKey="#{p.paymentId}"
+                             emptyMessage="No payment records found">
+
+                    <p:column headerText="Date">
+                        <h:outputText value="#{p.paymentDate}">
+                            <f:convertDateTime pattern="MMM dd, yyyy"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Mode">
+                        <h:outputText value="#{p.paymentMode}"/>
+                    </p:column>
+
+                    <p:column headerText="Amount Paid">
+                        <h:outputText value="₱ #{p.amountPaid}">
+                            <f:convertNumber minFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Reference No">
+                        <h:outputText value="#{p.paymentReferenceNumber}"/>
+                    </p:column>
+
+                    <p:column headerText="Status">
+                        <h:outputText value="#{p.paymentStatus}"
+                                      style="font-weight:bold"/>
+                    </p:column>
+
+                    <p:column headerText="Action" style="width:120px;text-align:center">
+                        <p:commandButton value="View"
+                                         icon="ui-icon-search"
+                                         process="@this"
+                                         update=":paymentForm:viewDlg"
+                                         oncomplete="PF('viewDlg').show()">
+                            <f:setPropertyActionListener
+                                value="#{p}"
+                                target="#{paymentBean.selectedPayment}"/>
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+
+        </h:form>
+
+        <!-- ================= VIEW DIALOG ================= -->
+        <p:dialog id="viewDlg"
+                  widgetVar="viewDlg"
+                  modal="true"
+                  header="Payment Details"
+                  width="400"
+                  resizable="false">
+
+            <h:panelGrid columns="2" cellpadding="6"
+                         rendered="#{not empty paymentBean.selectedPayment}">
+
+                <h:outputText value="Date:"/>
+                <h:outputText value="#{paymentBean.selectedPayment.paymentDate}">
+                    <f:convertDateTime pattern="MMM dd, yyyy"/>
+                </h:outputText>
+
+                <h:outputText value="Mode:"/>
+                <h:outputText value="#{paymentBean.selectedPayment.paymentMode}"/>
+
+                <h:outputText value="Amount:"/>
+                <h:outputText value="₱ #{paymentBean.selectedPayment.amountPaid}">
+                    <f:convertNumber minFractionDigits="2"/>
+                </h:outputText>
+
+                <h:outputText value="Reference No:"/>
+                <h:outputText value="#{paymentBean.selectedPayment.paymentReferenceNumber}"/>
+
+                <h:outputText value="Status:"/>
+                <h:outputText value="#{paymentBean.selectedPayment.paymentStatus}"/>
+
+            </h:panelGrid>
+
+            <f:facet name="footer">
+                <p:commandButton value="Download Receipt"
+                                 icon="ui-icon-arrowthick-1-s"
+                                 ajax="false"
+                                 actionListener="#{paymentBean.downloadReceipt}"
+                                 disabled="#{paymentBean.selectedPayment.paymentStatus ne 'APPROVED'}"/>
+
+                <p:commandButton value="Close"
+                                 icon="ui-icon-close"
+                                 type="button"
+                                 onclick="PF('viewDlg').hide()"/>
+            </f:facet>
+
+        </p:dialog>
+
+        <!-- ================= PRINT DIALOG ================= -->
+        <p:dialog widgetVar="printDlg"
+                  modal="true"
+                  width="800"
+                  header="Printable Payment Summary"
+                  resizable="false">
+
+            <h:panelGroup id="printArea" layout="block">
+
+                <div style="text-align:center;margin-bottom:10px;">
+                    <h3>YOUR SCHOOL NAME</h3>
+                    <small>Payment Summary (Student Copy)</small>
+                </div>
+
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank">
+                    <h:outputText value="Student No:"/>
+                    <h:outputText value="#{paymentBean.selectedPayment.studentNo}"/>
+
+                    <h:outputText value="Student Name:"/>
+                    <h:outputText value="#{paymentBean.selectedPayment.studentName}"/>
+                </p:panelGrid>
+
+                <p:separator/>
+
+                <p:dataTable value="#{paymentBean.paymentHistory}" var="p" rows="999">
+                    <p:column headerText="Date">
+                        <h:outputText value="#{p.paymentDate}">
+                            <f:convertDateTime pattern="MMM dd, yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Mode">
+                        <h:outputText value="#{p.paymentMode}"/>
+                    </p:column>
+                    <p:column headerText="Amount">
+                        <h:outputText value="₱ #{p.amountPaid}">
+                            <f:convertNumber minFractionDigits="2"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Reference">
+                        <h:outputText value="#{p.paymentReferenceNumber}"/>
+                    </p:column>
+                </p:dataTable>
+
+            </h:panelGroup>
+
+            <f:facet name="footer">
+                <p:commandButton value="Print"
+                                 icon="ui-icon-print"
+                                 type="button"
+                                 onclick="printSummary()"/>
+
+                <p:commandButton value="Close"
+                                 icon="ui-icon-close"
+                                 type="button"
+                                 onclick="PF('printDlg').hide()"/>
+            </f:facet>
+
+        </p:dialog>
+
+        <!-- ================= PRINT SCRIPT ================= -->
+        <h:outputScript library="resources" name="print-utils.js" target="body" />
+
+
+    </ui:define>
+</ui:composition>

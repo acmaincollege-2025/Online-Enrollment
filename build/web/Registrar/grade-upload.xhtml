@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/registrar-layout.xhtml">
+
+    <ui:define name="content">
+
+        <h:form enctype="multipart/form-data">
+
+            <p:panel header="📥 Upload Course Grades"
+                     style="max-width:700px;margin:auto;">
+
+                <p:messages  />
+
+                <!-- INSTRUCTIONS -->
+                <h:panelGroup layout="block" style="margin-bottom:15px;">
+                    <h:outputText
+                        value="Upload an Excel file containing student grades (status-based only). 
+                               Download the template below and follow the format strictly."
+                        styleClass="ui-outputlabel" />
+                </h:panelGroup>
+
+                <!-- TEMPLATE DOWNLOAD -->
+                <p:commandButton
+                    value="Download Excel Template"
+                    icon="ui-icon-arrowthick-1-s"
+                    ajax="false"
+                    actionListener="#{gradeUploadBean.downloadTemplate}"
+                    styleClass="ui-button-success"
+                    style="margin-bottom:20px;" />
+
+                <p:separator />
+
+                <!-- FILE UPLOAD -->
+                <p:fileUpload
+                    value="#{gradeUploadBean.excelFile}"
+                    mode="simple"
+                    skinSimple="true"
+                    allowTypes="/(\.|\/)(xls|xlsx)$/"
+                    label="Choose Excel File"
+                    style="margin-top:15px;" />
+
+                <br/><br/>
+
+                <!-- UPLOAD BUTTON -->
+                <p:commandButton
+                    value="Upload Grades"
+                    icon="ui-icon-arrowthick-1-n"
+                    action="#{gradeUploadBean.uploadGrades}"
+                    update="@form"
+                    styleClass="ui-button-primary" />
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

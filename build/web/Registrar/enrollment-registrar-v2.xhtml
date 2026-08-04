@@ -1,0 +1,291 @@
+<ui:composition template="/template/registrar-layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Registrar Enrollment
+    </ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="mainForm">
+
+            <p:growl id="messages"
+                     showDetail="true"
+                     life="3000"/>
+
+            <!-- ===================================================== -->
+            <!-- PAGE HEADER -->
+            <!-- ===================================================== -->
+
+            <div class="page-header">
+
+                <div>
+                    <h2 class="page-title">
+                        📚 Registrar Enrollment
+                    </h2>
+
+                    <div class="page-subtitle">
+                        Enroll students based on the approved curriculum.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- SEARCH CARD -->
+            <!-- ===================================================== -->
+
+            <p:panel styleClass="content-card">
+
+                <f:facet name="header">
+                    🔍 Student Search
+                </f:facet>
+
+                <h:panelGrid columns="3"
+                             cellpadding="8">
+
+                    <p:inputText
+                            value="#{enrollmentBean.searchKeyword}"
+                            placeholder="Enter Student Number or Name"
+                            style="width:320px"/>
+
+                    <p:commandButton
+                            value="Search Student"
+                            icon="ui-icon-search"
+                            process="@form"
+                            update="messages studentDialog"
+                            actionListener="#{enrollmentBean.searchStudent}"/>
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <br/>
+
+            <!-- ===================================================== -->
+            <!-- INFORMATION AREA -->
+            <!-- ===================================================== -->
+
+            <h:panelGroup
+                    id="enrollmentContent"
+                    rendered="#{not empty enrollmentBean.selectedStudent}">
+
+                <h:panelGrid
+                        columns="2"
+                        columnClasses="left-column,right-column"
+                        width="100%">
+
+                    <!-- =============================================== -->
+                    <!-- STUDENT INFORMATION -->
+                    <!-- =============================================== -->
+
+                    <p:panel
+                            header="👤 Student Information"
+                            styleClass="content-card">
+
+                        <h:panelGrid
+                                columns="2"
+                                cellpadding="6">
+
+                            <h:outputText value="Student No"/>
+
+                            <h:outputText
+                                    value="#{enrollmentBean.selectedStudent.studno}"/>
+
+                            <h:outputText value="Student Name"/>
+
+                            <h:outputText
+                                    value="#{enrollmentBean.selectedStudent.fullName}"/>
+
+                            <h:outputText value="Program"/>
+
+                            <h:outputText
+                                    value="#{enrollmentBean.selectedStudent.program_enrolled}"/>
+
+                       <!--     <h:outputText value="Status"/>
+
+                            <h:outputText
+                                    value="{enrollmentBean.selectedStudent.status}"/> -->
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <!-- =============================================== -->
+                    <!-- ENROLLMENT DETAILS -->
+                    <!-- =============================================== -->
+
+                    <p:panel
+                            header="📋 Enrollment Details"
+                            styleClass="content-card">
+
+                        <h:panelGrid
+                                columns="2"
+                                cellpadding="8">
+  
+                            <!-- Program -->
+
+                            <h:outputText value="Program"/>
+
+                            <p:selectOneMenu
+                                    value="#{enrollmentBean.selectedProgramId}"
+                                    style="width:250px">
+
+                                <f:selectItem
+                                        itemLabel="Select Program"
+                                        itemValue="#{null}"/>
+
+                                <f:selectItems
+                                        value="#{enrollmentBean.programs}"
+                                        var="program"
+                                        itemLabel="#{program.program_name}"
+                                        itemValue="#{program.program_id}"/>
+
+                                <p:ajax
+                                        listener="#{enrollmentBean.onProgramChange}"
+                                        update="yearLevel"/>
+
+                            </p:selectOneMenu>
+
+                            <!-- Year -->
+
+                            <h:outputText value="Year Level"/>
+
+                            <p:selectOneMenu
+                                    id="yearLevel"
+                                    value="#{enrollmentBean.selectedYearLevel}"
+                                    style="width:250px">
+
+                                <f:selectItem
+                                        itemLabel="Select Year"
+                                        itemValue="#{null}"/>
+
+                                <f:selectItems
+                                        value="#{enrollmentBean.availableYearLevels}"/>
+
+                            </p:selectOneMenu>
+
+                            <!-- Semester -->
+
+                            <h:outputText value="Semester"/>
+
+                            <p:selectOneMenu
+                                    value="#{enrollmentBean.selectedSemester}"
+                                    style="width:250px">
+
+                                <f:selectItem
+                                        itemLabel="Select Semester"
+                                        itemValue="#{null}"/>
+
+                                <f:selectItem
+                                        itemLabel="1st Semester"
+                                        itemValue="1st"/>
+
+                                <f:selectItem
+                                        itemLabel="2nd Semester"
+                                        itemValue="2nd"/>
+
+                            </p:selectOneMenu>
+
+                            <!-- Academic Year -->
+
+                            <h:outputText value="Academic Year"/>
+
+                            <p:inputText
+                                    value="#{enrollmentBean.selectedAcademicYear}"
+                                    style="width:240px"
+                                    placeholder="2026-2027"/>
+
+                        </h:panelGrid>
+
+                        <br/>
+
+                        <p:commandButton
+                                value="📚 Load Curriculum"
+                                process="@form"
+                                update="curriculumPanel messages"
+                                actionListener="#{enrollmentBean.loadSubjectsManual}"/>
+
+                    </p:panel>
+
+                </h:panelGrid>
+
+            </h:panelGroup>
+
+            <!-- ===================================================== -->
+            <!-- STUDENT SEARCH DIALOG -->
+            <!-- ===================================================== -->
+
+            <p:dialog
+                    id="studentDialog"
+                    widgetVar="studentDialog"
+                    header="Select Student"
+                    modal="true"
+                    width="700">
+
+                <p:dataTable
+                        value="#{enrollmentBean.searchResults}"
+                        var="student"
+                        paginator="true"
+                        rows="8"
+                        emptyMessage="No students found">
+
+                    <p:column headerText="Student No">
+                        #{student.studno}
+                    </p:column>
+
+                    <p:column headerText="Student Name">
+                        #{student.lastname},
+                        #{student.firstname}
+                    </p:column>
+
+                    <p:column headerText="Program">
+                        #{student.program_enrolled}
+                    </p:column>
+
+                    <p:column style="width:120px">
+
+                        <p:commandButton
+                                value="Select"
+                                process="@this"
+                                update=":mainForm:enrollmentContent messages"
+                                actionListener="#{enrollmentBean.selectStudent}"
+                                oncomplete="PF('studentDialog').hide()">
+
+                            <f:setPropertyActionListener
+                                    target="#{enrollmentBean.tempStudent}"
+                                    value="#{student}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:dialog>
+
+            <!-- ===================================================== -->
+            <!-- Part 2 Placeholder -->
+            <!-- ===================================================== -->
+
+            <p:panel id="curriculumPanel"
+                     rendered="#{not empty enrollmentBean.selectedStudent}">
+
+                <f:facet name="header">
+                    📚 Curriculum Subjects
+                </f:facet>
+
+                <h:outputText
+                        value="Curriculum subjects will be implemented in Part 2."/>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

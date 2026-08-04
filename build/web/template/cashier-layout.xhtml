@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <h:outputStylesheet
+            name="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+        <title>Cashier Module - Alitagtag College</title>
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{loginBean.checkSession}" />
+        </f:metadata>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: "Segoe UI", sans-serif;
+                background-color: #f4f6f9;
+            }
+
+            .layout-wrapper {
+                display: grid;
+                grid-template-areas:
+                    "sidebar header"
+                    "sidebar content"
+                    "sidebar footer";
+                grid-template-columns: 230px 1fr;
+                grid-template-rows: 60px auto 50px;
+                height: 100vh;
+            }
+
+            /* HEADER */
+            .header {
+                grid-area: header;
+                background-color: #004085;
+                color: white;
+                padding: 15px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            /* SIDEBAR */
+            .sidebar {
+                grid-area: sidebar;
+                background-color: #003366;
+                padding: 20px 15px;
+                color: white;
+            }
+
+            .sidebar-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 15px;
+            }
+
+            .menu-item {
+                display: block;
+                background: #004080;
+                color: white;
+                padding: 10px 14px;
+                border-radius: 6px;
+                margin-bottom: 8px;
+                text-decoration: none;
+                transition: 0.2s;
+            }
+
+            .menu-item:hover {
+                background-color: #00bcd4;
+                color: black;
+            }
+
+            /* CONTENT */
+            .content {
+                grid-area: content;
+                background: white;
+                padding: 30px;
+                overflow-y: auto;
+            }
+
+            /* FOOTER */
+            .footer {
+                grid-area: footer;
+                background-color: #004085;
+                color: white;
+                text-align: center;
+                padding: 12px;
+            }
+
+            @media(max-width: 768px) {
+                .layout-wrapper {
+                    grid-template-areas:
+                        "header"
+                        "content"
+                        "footer";
+                    grid-template-columns: 1fr;
+                }
+                .sidebar {
+                    display: none;
+                }
+            }
+        </style>
+
+    </h:head>
+
+    <h:body>
+        <h:form>
+            <p:idleMonitor timeout="900000"> <!-- 15 minutes -->
+                <p:ajax event="idle" listener="#{loginBean.logout}" />
+            </p:idleMonitor>
+        </h:form>
+        <h:form>
+
+            <div class="layout-wrapper">
+
+                <!-- HEADER -->
+                <div class="header">
+                    <div>
+                        <strong>Cashier Module</strong> – Alitagtag College
+                    </div>
+
+                    <div>
+                        Logged in as:
+                        <strong><h:outputText value="#{loginBean.fullname}" /></strong>
+                        |
+                        <p:commandButton value="Logout"
+                                         action="#{loginBean.logout}"
+                                         style="background:#c82333;color:white;border:none;padding:6px 12px;border-radius:4px;" />
+                    </div>
+                </div>
+
+                <!-- SIDEBAR -->
+                <div class="sidebar">
+                    <div class="sidebar-title">Menu</div>
+
+                    <h:link outcome="cashier" styleClass="menu-item">Dashboard</h:link>
+                    <h:link outcome="fee-config" styleClass="menu-item">Fee Configuration</h:link>
+                    <h:link outcome="assessment" styleClass="menu-item">Assessment</h:link>
+                    <h:link outcome="approval" styleClass="menu-item">Payment Approval</h:link>
+                    <h:link outcome="payment-history" styleClass="menu-item">Payment History</h:link>
+                    <h:link outcome="receipt" styleClass="menu-item">Receipt Generator</h:link>
+                </div>
+
+                <!-- CONTENT AREA -->
+                <div class="content">
+                    <ui:insert name="content" />
+                </div>
+
+                <!-- FOOTER -->
+                <div class="footer">
+                    © 2025 Alitagtag College – Cashier System
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </h:body>
+
+</html>

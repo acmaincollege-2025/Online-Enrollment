@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <div class="sidebar">
+
+        <div class="sidebar-header">
+            🎓 Registrar Panel
+        </div>
+
+        <!-- DASHBOARD -->
+        <h:link outcome="dashboard" value="📊 Dashboard" />
+
+        <!-- ENROLLMENT -->
+        <h:link outcome="enrollment" value="📝 Admission/Enrollment" />
+        <h:link outcome="enrollment-period" value="📅 Enrollment Period" />
+        <h:link outcome="add-drop" value="🔄 Add / Drop" />
+
+        <!-- STUDENTS -->
+        <h:link outcome="student-management" value="👨‍🎓 Manage Students" />
+        <h:link outcome="student-list" value="📋 Student List" />
+        <h:link outcome="student-progress" value="📈 Student Progress"/>
+                    
+
+        <!-- COURSES -->
+        <h:link outcome="/Registrar/course-management" value="📚 Course Setup" />
+        <h:link outcome="/Registrar/curriculum-management" value="📚 Curiculum Setup" />
+        <h:link outcome="course-list" value="📘 Course List" />
+    <!--    <h:link outcome="upload-courses" value="⬆ Upload Courses" /> -->
+
+        <!-- PROGRAMS -->
+        <!--<h:link outcome="program-management" value="🏫 Program Management" />-->
+        <h:link outcome="/Registrar/college-programs.xhtml" 
+                value="🎓 College Programs" />
+
+        <!-- APPROVAL -->
+        <h:link outcome="approval" value="✅ Registrar Approval" />
+
+        <!-- PROFILE -->
+        <ui:include src="/common/user-profile-dialog.xhtml"/>
+        <h:form>
+            <p:commandLink value="👤 Profile"
+                           onclick="PF('userProfileDialog').show(); return false;" />
+        </h:form>
+
+        <!-- LOGOUT (MUST BE OWN FORM) -->
+        <h:form id="logoutForm">
+            <li class="menu-item">
+                <a href="#{request.contextPath}/logout"
+                   onclick="return confirm('Are you sure you want to logout?');">
+                    🚪 Logout
+                </a>
+            </li>
+
+        </h:form>
+
+    </div>
+
+</ui:composition>
+

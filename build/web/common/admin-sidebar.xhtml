@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <div class="sidebar">
+
+        <!-- HEADER -->
+        <div class="sidebar-header">
+            🛠 System Administrator Panel
+        </div>
+
+        <!-- DASHBOARD -->
+        <h:link outcome="/Admin/dashboard.xhtml" value="📊 Dashboard" />
+
+        <!-- SYSTEM MANAGEMENT -->
+        <h:link outcome="carousel" value="🖼 Carousel Management" />
+        <h:link outcome="email-settings" value="✉ Email Settings" />
+      <!--  <h:link outcome="faq" value="❓ FAQ Management" />-->
+
+        <!-- ADMINISTRATION -->
+        <h:link outcome="student-accounts" value="🧑‍💻 Student Accounts" />
+        <h:link outcome="user-management" value="👥 User Management" />
+        <h:link outcome="audit" value="🕵 Audit Logs" />
+
+        <!-- PROFILE -->
+        <ui:include src="/common/user-profile-dialog.xhtml"/>
+        <h:form>
+            <p:commandLink value="👤 Profile"
+                           onclick="PF('userProfileDialog').show(); return false;" />
+        </h:form>
+
+        <!-- LOGOUT (OWN FORM – IMPORTANT) -->
+        <h:form id="logoutForm">
+            <a href="#{request.contextPath}/logout"
+               onclick="return confirm('Are you sure you want to logout?');">
+                🚪 Logout
+            </a>
+        </h:form>
+
+    </div>
+
+</ui:composition>
+
+
+

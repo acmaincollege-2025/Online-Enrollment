@@ -1,0 +1,78 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <!-- ===== STYLES ===== -->
+    <style>
+        .faq-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+        }
+
+        .faq-panel {
+            width: 360px;
+            max-height: 420px;
+            border-radius: 14px;
+        }
+
+        .faq-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .faq-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+
+    <!-- FLOATING FAQ BUTTON -->
+    <p:commandButton
+        id="faqBtn"
+        type="button"
+        value="❓"
+        styleClass="faq-float faq-emoji-btn"
+        onclick="PF('faqPanel').toggle();" />
+
+
+    <!-- FAQ OVERLAY PANEL -->
+    <p:overlayPanel
+        widgetVar="faqPanel"
+        for="faqBtn"
+        styleClass="faq-panel"
+        dismissable="true"
+        showEffect="slide"
+        hideEffect="fade">
+
+        <div class="faq-header">Help &amp; FAQs</div>
+
+        <!-- CATEGORY FILTER -->
+        <p:selectOneMenu value="#{faqBean.selectedCategory}" style="width:100%;">
+            <f:selectItem itemLabel="All Categories" itemValue="" />
+            <f:selectItems value="#{faqBean.categories}"
+                           var="c"
+                           itemLabel="#{c.category}"
+                           itemValue="#{c.category}" />
+            <p:ajax listener="#{faqBean.filterFaqByCategory}"
+                    update="faqList" />
+        </p:selectOneMenu>
+
+        <!-- FAQ LIST -->
+        <p:outputPanel id="faqList"
+                       style="margin-top:10px; max-height:300px; overflow:auto;">
+            <ui:repeat value="#{faqBean.faqList}" var="faq">
+                <div class="faq-entry">
+                    <b>#{faq.question}</b><br/>
+                    <h:outputText value="#{faq.answer}" escape="false"/>
+                </div>
+            </ui:repeat>
+        </p:outputPanel>
+
+    </p:overlayPanel>
+
+</ui:composition>

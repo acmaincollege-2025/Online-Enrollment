@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition template="/template/layout-admission.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+
+        <h:form id="admissionEnrollmentForm">
+
+            <!-- Growl for feedback -->
+            <p:growl id="growl" showDetail="true" life="4000"/>
+
+            <!-- Enrollment Status -->
+            <div class="system-alert #{enrollmentPeriodBean.enrollmentOpen ? 'open' : 'closed'}">
+                <i class="pi #{enrollmentPeriodBean.enrollmentOpen ? 'pi-check-circle' : 'pi-lock'}"></i>
+                <h:outputText
+                    value="#{enrollmentPeriodBean.enrollmentOpen ? 
+                             'Enrollment is OPEN' : 'Enrollment is CLOSED'}"/>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Admission Enrollment</h2>
+                <span>Search, select, and enroll students</span>
+            </div>
+
+            <!-- Student Table -->
+            <p:panel header="📋 Student List" styleClass="card-panel">
+                <p:dataTable id="studentTable"
+                             value="#{enrollmentBean.studentLazyModel}"
+                             var="s"
+                             lazy="true"
+                             paginator="true"
+                             rows="10"
+                             rowKey="#{s.sid}"
+                             selection="#{enrollmentBean.selectedStudent}"
+                             selectionMode="single">
+
+                    <p:ajax event="rowSelect"
+                            listener="#{enrollmentBean.onStudentSelect}"
+                            update=":admissionEnrollmentForm:enrollPanel"/>
+
+                    <p:column headerText="Student No">
+                        #{s.sid}
+                    </p:column>
+
+                    <p:column headerText="Full Name">
+                        #{s.lastname}, #{s.firstname}
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+
+            <!-- Enrollment Panel -->
+            <p:outputPanel id="enrollPanel" layout="block">
+
+                <p:panel header="📄 Enrollment Details"
+                         styleClass="card-panel"
+                         style="#{empty enrollmentBean.selectedStudent ? 'display:none' : ''}">
+
+                    <h:panelGrid columns="2" cellpadding="10" style="width:55%;">
+
+                        <h:outputLabel value="Academic Year"/>
+                        <p:inputText value="#{enrollmentBean.enrollment.academic_year}"/>
+
+                        <h:outputLabel value="Semester"/>
+                        <p:selectOneMenu value="#{enrollmentBean.enrollment.semester}">
+                            <f:selectItem itemLabel="1st Semester" itemValue="1st"/>
+                            <f:selectItem itemLabel="2nd Semester" itemValue="2nd"/>
+                            <f:selectItem itemLabel="Summer" itemValue="Summer"/>
+                        </p:selectOneMenu>
+
+                    </h:panelGrid>
+
+                </p:panel>
+
+            </p:outputPanel>
+
+
+            <!-- Confirm Dialog -->
+            <p:confirmDialog widgetVar="enrollConfirmDlg" header="Confirm Enrollment" severity="warn">
+                <h:panelGrid columns="1" cellpadding="6">
+                    <h:outputText value="Confirm enrollment for:" style="font-weight:bold"/>
+                    <h:outputText value="#{enrollmentBean.selectedStudent.lastname}, #{enrollmentBean.selectedStudent.firstname}"/>
+                </h:panelGrid>
+
+                <p:commandButton value="Confirm" icon="pi pi-check"
+                                 action="#{enrollmentBean.enrollStudentFromAdmin}"
+                                 update="@form:growl"
+                                 oncomplete="PF('enrollConfirmDlg').hide()"/>
+
+                <p:commandButton value="Cancel" icon="pi pi-times" type="button"
+                                 onclick="PF('enrollConfirmDlg').hide()"/>
+            </p:confirmDialog>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

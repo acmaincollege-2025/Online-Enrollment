@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <style>
+        #student-chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2c7be5;
+            color: #fff;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 55px;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        #student-chat-widget {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 320px;
+            background: white;
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0,0,0,.3);
+            z-index: 1000;
+        }
+
+    </style>
+    <h:form id="studentChatWidgetForm">
+
+        <!-- Chat Bubble -->
+        <div id="student-chat-toggle" onclick="toggleStudentChat()">
+            🎓
+        </div>
+
+        <!-- Chat Box -->
+        <div id="student-chat-widget">
+            <div class="chat-header">
+                Student Support
+                <span class="close-btn" onclick="toggleStudentChat()">✖</span>
+            </div>
+
+            <div class="chat-body">
+                <ui:repeat value="#{studentChatBean.messages}" var="msg">
+                    <div class="chat-message #{msg.sender eq 'Bot' ? 'bot' : 'user'}">
+                        #{msg.text}
+                    </div>
+                </ui:repeat>
+            </div>
+
+            <div class="chat-footer">
+                <p:inputText value="#{studentChatBean.userMessage}"
+                             styleClass="chat-input"
+                             placeholder="Ask about your enrollment…" />
+
+                <p:commandButton value="Send"
+                                 action="#{studentChatBean.send}"
+                                 update="studentChatWidgetForm"
+                                 styleClass="chat-send"/>
+            </div>
+        </div>
+
+    </h:form>
+    <script>
+        function toggleStudentChat() {
+            var chat = document.getElementById("student-chat-widget");
+            chat.style.display = (chat.style.display === "none" || chat.style.display === "")
+                    ? "flex"
+                    : "none";
+        }
+    </script>
+
+</ui:composition>
+
+

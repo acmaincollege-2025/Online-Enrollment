@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/template/layout_student.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+
+        <h:form id="editProfileForm">
+
+            <!-- ================= HEADER ================= -->
+            <p:panel header="✏️ Edit Student Profile" style="margin-bottom:15px">
+
+                <h:outputText value="Update your personal information below."
+                              style="color:#666"/>
+
+            </p:panel>
+
+            <!-- ================= PROFILE FORM ================= -->
+            <p:panel>
+
+                <h:panelGrid columns="2" cellpadding="8" style="width:100%">
+
+                    <!-- Student Number -->
+                    <h:outputLabel value="Student No:"/>
+                    <p:inputText value="#{studentBean.student.studno}"
+                                 readonly="true"
+                                 style="width:100%"/>
+
+                    <!-- First Name -->
+                    <h:outputLabel value="First Name:"/>
+                    <p:inputText value="#{studentBean.student.firstname}"
+                                 required="true"
+                                 style="width:100%"/>
+
+                    <!-- Last Name -->
+                    <h:outputLabel value="Last Name:"/>
+                    <p:inputText value="#{studentBean.student.lastname}"
+                                 required="true"
+                                 style="width:100%"/>
+
+                    <!-- Email -->
+                    <h:outputLabel value="Email:"/>
+                    <p:inputText value="#{studentBean.student.email}"
+                                 required="true"
+                                 style="width:100%"/>
+
+                    <!-- Contact Number -->
+                    <h:outputLabel value="Contact No:"/>
+                    <p:inputText value="#{studentBean.student.contactno}"
+                                 style="width:100%"/>
+
+                    <!-- Address -->
+                    <h:outputLabel value="Address:"/>
+                    <p:inputTextarea value="#{studentBean.student.address}"
+                                     rows="3"
+                                     style="width:100%"/>
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <!-- ================= ACTION BUTTONS ================= -->
+            <p:panel style="margin-top:15px;text-align:right">
+
+                <p:commandButton value="💾 Save Changes"
+                                 action="#{studentBean.updateProfile}"
+                                 update="@form messages"
+                                 icon="ui-icon-disk"/>
+
+                <p:commandButton value="↩ Back"
+                                 action="student-dashboard?faces-redirect=true"
+                                 immediate="true"
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+
+            </p:panel>
+
+            <!-- ================= MESSAGES ================= -->
+            <p:messages id="messages" closable="true"/>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

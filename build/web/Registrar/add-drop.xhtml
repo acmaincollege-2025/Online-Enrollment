@@ -1,0 +1,791 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="/template/registrar-layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <style>
+            .card-link {
+                text-decoration:none !important;
+            }
+
+            .stat-grid {
+                display:flex;
+                gap:1rem;
+                flex-wrap:wrap;
+            }
+
+            .stat-card {
+                min-width:220px;
+                display:flex;
+                align-items:center;
+                gap:1rem;
+                padding:1rem;
+                border-radius:10px;
+                cursor:pointer;
+                transition:.2s;
+            }
+
+            .stat-card:hover {
+                transform:translateY(-3px);
+            }
+
+            .pending {
+                background:#fff7ed;
+            }
+
+            .approved {
+                background:#ecfdf5;
+            }
+
+            .rejected {
+                background:#fef2f2;
+            }
+
+            .total {
+                background:#eff6ff;
+            }
+
+            .stat-value {
+                display:block;
+                font-size:1.6rem;
+                font-weight:700;
+            }
+
+            .stat-label {
+                color:#666;
+            }
+
+            .student-info strong {
+                color:#1f2937;
+            }
+
+            .student-info small {
+                color:#6b7280;
+            }
+
+            .status-badge {
+                padding:6px 12px;
+                border-radius:999px;
+                font-size:.85rem;
+                font-weight:600;
+            }
+
+            .status-badge.pending {
+                background:#fff7ed;
+                color:#ea580c;
+            }
+
+            .status-badge.approved {
+                background:#ecfdf5;
+                color:#16a34a;
+            }
+
+            .status-badge.rejected {
+                background:#fef2f2;
+                color:#dc2626;
+            }
+        </style>
+        <h:form id="addDropRegistrarForm">
+
+            <!-- PAGE HEADER -->
+            <div class="p-mb-3">
+                <h2 class="p-text-bold">📘 Add / Drop Subjects</h2>
+                <p class="p-text-secondary">
+                    On-site transactions and student add-drop requests
+                </p>
+            </div>
+
+            <p:tabView dynamic="true" cache="true">
+
+                <!-- ================= TAB 1: ON-SITE ADD/DROP ================= -->
+                <p:tab title="🏫 On-Site Add / Drop">
+
+                    <!-- ========================= -->
+                    <!-- 🔎 STUDENT SEARCH PANEL -->
+                    <!-- ========================= -->
+                    <p:panel header="🔍 Student Search"
+                             styleClass="p-shadow-2 p-mb-4">
+
+                        <p:panelGrid columns="4" layout="grid"
+                                     columnClasses="p-col-12 p-md-3,p-col-12 p-md-3,p-col-12 p-md-3,p-col-12 p-md-3"
+                                     styleClass="p-fluid">
+
+                            <p:outputLabel value="Student No / Name" />
+                            <p:inputText value="#{registrarEnrollmentBean.searchKeyword}"
+                                         placeholder="e.g. 2024-0001 or Juan Dela Cruz" />
+
+                            <p:outputLabel value="Academic Year" />
+                            <p:selectOneMenu value="#{registrarEnrollmentBean.academicYear}">
+                                <f:selectItem itemLabel="Select Year" itemValue="" />
+                                <f:selectItems value="#{registrarEnrollmentBean.academicYears}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Semester" />
+                            <p:selectOneMenu value="#{registrarEnrollmentBean.semester}">
+                                <f:selectItem itemLabel="Select Semester" itemValue="" />
+                                <f:selectItem itemLabel="1st Semester" itemValue="1st" />
+                                <f:selectItem itemLabel="2nd Semester" itemValue="2nd" />
+                                <f:selectItem itemLabel="Summer" itemValue="Summer" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="" />
+                            <p:commandButton value="🔎 Search Student"
+                                             action="#{registrarEnrollmentBean.searchStudents}"
+                                             update="studentResultTable studentSection"
+                                             styleClass="p-button-primary" />
+
+                        </p:panelGrid>
+                    </p:panel>
+
+
+                    <!-- ========================= -->
+                    <!-- 📋 SEARCH RESULTS -->
+                    <!-- ========================= -->
+                    <p:panel header="📋 Search Results"
+                             styleClass="p-shadow-2 p-mb-4">
+
+                        <p:dataTable id="studentResultTable"
+                                     value="#{registrarEnrollmentBean.searchResults}"
+                                     var="s"
+                                     emptyMessage="No students found."
+                                     selectionMode="single"
+                                     selection="#{registrarEnrollmentBean.selectedStudent}"
+                                     rowKey="#{s.sid}">
+
+                            <p:ajax event="rowSelect" listener="#{registrarEnrollmentBean.onStudentSelect()}"
+                                    update="@form" />
+
+                            <p:column headerText="Student No">
+                                #{s.studno}
+                            </p:column>
+
+                            <p:column headerText="Full Name">
+                                #{s.studentName}
+                            </p:column>
+
+                            <p:column headerText="Program">
+                                #{s.program.program_code}
+                            </p:column>
+
+                            <p:column headerText="Enrollment ID">
+                                #{s.enrollment_id}
+                            </p:column>
+
+                            <p:column headerText="Date Enrolled">
+                                #{s.dateEnrolled}
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+
+                    <!-- ========================= -->
+                    <!-- 📌 ONLY SHOW WHEN STUDENT SELECTED -->
+                    <!-- ========================= -->
+                    <h:panelGroup id="studentSection"
+                                  layout="block"
+                                  style="#{empty registrarEnrollmentBean.selectedStudent ? 'display:none' : ''}">
+
+                        <div class="ui-g">
+
+                            <!-- ======================================= -->
+                            <!-- LEFT SIDE -->
+                            <!-- FILTERS + AVAILABLE COURSES -->
+                            <!-- ======================================= -->
+                            <div class="ui-g-12 ui-md-7">
+
+                                <!-- FILTER PANEL -->
+                                <p:panel header="🔍 Course Filters"
+                                         styleClass="p-shadow-2 p-mb-3">
+
+                                    <div class="ui-fluid">
+
+                                        <!-- PROGRAM -->
+                                        <div class="p-field p-mb-3">
+                                            <p:outputLabel value="Program" />
+
+                                            <p:selectOneMenu value="#{registrarEnrollmentBean.programId}"
+                                                             style="width:100%">
+
+                                                <f:selectItem itemLabel="Select Program"
+                                                              itemValue="#{null}" />
+
+                                                <f:selectItems value="#{registrarEnrollmentBean.programList}"
+                                                               var="p"
+                                                               itemValue="#{p.program_id}"
+                                                               itemLabel="#{p.program_code}" />
+
+                                                <p:ajax event="change"
+                                                        listener="#{registrarEnrollmentBean.onProgramChange}"
+                                                        update="currYearMenu" />
+
+                                            </p:selectOneMenu>
+                                        </div>
+
+
+                                        <!-- CURRICULUM YEAR -->
+                                        <div class="p-field p-mb-3">
+
+                                            <p:outputLabel value="Curriculum Year" />
+
+                                            <p:selectOneMenu id="currYearMenu"
+                                                             value="#{registrarEnrollmentBean.currYear}"
+                                                             style="width:100%">
+
+                                                <f:selectItem itemLabel="Select Curriculum Year"
+                                                              itemValue="#{null}" />
+
+                                                <f:selectItems value="#{registrarEnrollmentBean.currYearList}"
+                                                               var="y"
+                                                               itemValue="#{y}"
+                                                               itemLabel="#{y}" />
+
+                                            </p:selectOneMenu>
+
+                                        </div>
+
+
+                                        <!-- SEMESTER -->
+                                        <div class="p-field p-mb-3">
+
+                                            <p:outputLabel value="Semester" />
+
+                                            <p:selectOneMenu value="#{registrarEnrollmentBean.courseTerm}"
+                                                             style="width:100%">
+
+                                                <f:selectItem itemLabel="1st Semester" itemValue="1st"/>
+                                                <f:selectItem itemLabel="2nd Semester" itemValue="2nd"/>
+                                                <f:selectItem itemLabel="Summer" itemValue="Summer"/>
+
+
+                                            </p:selectOneMenu>
+
+                                        </div>
+                                        <!-- YEAR LEVEL -->
+                                        <div class="p-field p-mb-3">
+
+                                            <p:outputLabel value="Year Level" />
+
+                                            <p:selectOneMenu value="#{registrarEnrollmentBean.yearLevel}"
+                                                             style="width:100%">
+
+                                                <f:selectItem itemLabel="1st Year" itemValue="1"/>
+                                                <f:selectItem itemLabel="2nd Year" itemValue="2"/>
+                                                <f:selectItem itemLabel="3rd Year" itemValue="3"/>
+                                                <f:selectItem itemLabel="4th Year" itemValue="4"/>
+
+                                            </p:selectOneMenu>
+
+                                        </div>
+
+
+                                        <!-- SEARCH BUTTON -->
+                                        <div class="p-mt-3">
+
+                                            <p:commandButton value="🔍 Search Courses"
+                                                             action="#{registrarEnrollmentBean.filterCourses}"
+                                                             update="coursePanel"
+                                                             styleClass="p-button-primary" />
+
+                                        </div>
+
+                                    </div>
+
+                                </p:panel>
+
+
+                                <!-- AVAILABLE COURSES -->
+                                <p:panel id="coursePanel"
+                                         header="📚 Available Courses"
+                                         styleClass="p-shadow-2">
+
+                                    <p:dataTable id="availableCourseTable"
+                                                 value="#{registrarEnrollmentBean.filteredCourseList}"
+                                                 var="c"
+                                                 rowKey="#{c.courseId}"
+                                                 selection="#{registrarEnrollmentBean.selectedAvailableCourses}"
+                                                 emptyMessage="No available courses found.">
+
+                                        <p:column selectionMode="multiple"
+                                                  style="width:50px;text-align:center"/>
+
+                                        <p:column headerText="Code">
+                                            #{c.courseCode}
+                                        </p:column>
+
+                                        <p:column headerText="Title">
+                                            #{c.courseTitle}
+                                        </p:column>
+
+                                        <p:column headerText="Units">
+                                            #{c.units}
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                    <!-- BUTTON BELOW TABLE -->
+                                    <div class="p-mt-3">
+
+                                        <p:commandButton value=" ➕ Add Selected"
+                                                         process="@form"
+                                                         action="#{registrarEnrollmentBean.prepareAddCourses}"
+                                                         update="addPreviewDialog"
+                                                         oncomplete="if(!args.validationFailed) PF('addPreviewWV').show()"
+                                                         styleClass="p-button-success"/>
+
+                                    </div>
+
+                                </p:panel>
+
+                            </div>
+
+
+                            <!-- ======================================= -->
+                            <!-- RIGHT SIDE -->
+                            <!-- CURRENT ENROLLED COURSES -->
+                            <!-- ======================================= -->
+                            <div class="ui-g-12 ui-md-5">
+
+                                <p:panel header="📋 Current Enrolled Courses"
+                                         styleClass="p-shadow-2">
+
+                                    <p:dataTable id="enrolledCourseTable"
+                                                 value="#{registrarEnrollmentBean.enrolledCourses}"
+                                                 var="ec"
+                                                 rowKey="#{ec.id}"
+                                                 selection="#{registrarEnrollmentBean.selectedEnrolledCourses}"
+                                                 emptyMessage="No enrolled courses found.">
+
+                                        <!-- CHECKBOX -->
+                                        <p:column selectionMode="multiple"
+                                                  style="width:50px;text-align:center"/>
+
+                                        <p:column headerText="Code">
+                                            #{ec.course.courseCode}
+                                        </p:column>
+
+                                        <p:column headerText="Title">
+                                            #{ec.course.courseTitle}
+                                        </p:column>
+
+                                        <p:column headerText="Units">
+                                            #{ec.course.units}
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                    <!-- BUTTON BELOW TABLE -->
+                                    <div class="p-mt-3">
+
+                                        <p:commandButton value="🗑 Remove Selected"
+                                                         process="@form"
+                                                         action="#{registrarEnrollmentBean.prepareDropCourses}"
+                                                         update="dropPreviewDialog "
+                                                         oncomplete="if(!args.validationFailed) PF('dropPreviewWV').show()"
+                                                         styleClass="p-button-danger"/>
+
+                                    </div>
+
+                                </p:panel>
+                            </div>
+
+                        </div>
+
+                    </h:panelGroup>
+                    <!-- ================================= -->
+                    <!-- ADD COURSE PREVIEW DIALOG -->
+                    <!-- ================================= -->
+                    <p:dialog id="addPreviewDialog"
+                              widgetVar="addPreviewWV"
+                              modal="true"
+                              appendTo="@(body)"
+                              header="Preview Add Courses"
+                              width="700"
+                              closable="true"
+                              resizable="false">
+
+                        <p:dataTable value="#{registrarEnrollmentBean.selectedAvailableCourses}"
+                                     var="c"
+                                     emptyMessage="No selected courses.">
+
+                            <p:column headerText="Code">
+                                #{c.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Title">
+                                #{c.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{c.units}
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <div class="ui-g ui-fluid">
+                            <div class="ui-g-12 ui-md-6">
+                                <p:commandButton value=" 💾 Confirm Save"
+                                                 action="#{registrarEnrollmentBean.confirmAddCourses}"
+                                                 update="@form"
+                                                 oncomplete="PF('addPreviewWV').hide()"
+                                                 styleClass="p-button-success"/>
+                            </div>
+                            <div class="ui-g-12 ui-md-6">
+                                <p:commandButton value="❌ Cancel"
+                                                 type="button"
+                                                 onclick="PF('addPreviewWV').hide()"
+                                                 styleClass="p-button-secondary"/>
+                            </div>
+                        </div>
+
+
+                    </p:dialog>
+                    <!-- ================================= -->
+                    <!-- DROP COURSE PREVIEW DIALOG -->
+                    <!-- ================================= -->
+                    <p:dialog id="dropPreviewDialog"
+                              widgetVar="dropPreviewWV"
+                              header="Preview Dropped Courses"
+                              modal="true"
+                              appendTo="@(body)"
+                              width="700"
+                              closable="true"
+                              resizable="false">
+
+                        <p:dataTable value="#{registrarEnrollmentBean.selectedEnrolledCourses}"
+                                     var="ec"
+                                     emptyMessage="No selected courses.">
+
+                            <p:column headerText="Code">
+                                #{empty ec.course ? '-' : ec.course.courseCode}
+                            </p:column>
+
+                            <p:column headerText="Title">
+                                #{empty ec.course ? '-' : ec.course.courseTitle}
+                            </p:column>
+
+                            <p:column headerText="Units">
+                                #{empty ec.course ? '-' : ec.course.units}
+                            </p:column>
+
+                        </p:dataTable>
+
+
+                        <div class="ui-g ui-fluid">
+                            <div class="ui-g-12 ui-md-6"> 
+                                <p:commandButton value=" ✔️ Confirm Remove"
+                                                 action="#{registrarEnrollmentBean.confirmDropCourses}"
+                                                 update="@form"
+                                                 oncomplete="PF('dropPreviewWV').hide()"
+                                                 styleClass="p-button-danger"/>
+                            </div>
+                            <div class="ui-g-12 ui-md-6"> 
+                                <p:commandButton value="❌ Cancel"
+                                                 type="button"
+                                                 onclick="PF('dropPreviewWV').hide()"
+                                                 styleClass="p-button-secondary"/>
+                            </div>
+                        </div>
+
+
+                    </p:dialog>
+                </p:tab>
+
+                <!-- ================= TAB 2: ONLINE ADD-DROP REQUESTS ================= -->
+                <p:tab title="📥 Student Requests">
+
+                    <!-- ========================= -->
+                    <!-- SUMMARY CARDS -->
+                    <!-- ========================= -->
+                    <p:outputPanel id="requestStats">
+                        <div class="stat-grid">
+
+                            <p:commandLink process="@this"
+                                           update="requestTable requestStats"
+                                           action="#{addDropRegistrarBean.filterPending}"
+                                           styleClass="card-link">
+
+                                <div class="stat-card pending">
+
+                                    <i class="pi pi-clock"></i>
+
+                                    <div>
+                                        <span class="stat-value">
+                                            #{addDropRegistrarBean.pendingCount}
+                                        </span>
+
+                                        <span class="stat-label">
+                                            Pending
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                            </p:commandLink>
+
+                            <p:commandLink process="@this"
+                                           update="requestTable requestStats"
+                                           action="#{addDropRegistrarBean.filterApproved}"
+                                           styleClass="card-link">
+
+                                <div class="stat-card approved">
+
+                                    <i class="pi pi-check-circle"></i>
+
+                                    <div>
+                                        <span class="stat-value">
+                                            #{addDropRegistrarBean.approvedCount}
+                                        </span>
+
+                                        <span class="stat-label">
+                                            Approved
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                            </p:commandLink>
+
+                            <p:commandLink process="@this"
+                                           update="requestTable requestStats"
+                                           action="#{addDropRegistrarBean.filterRejected}"
+                                           styleClass="card-link">
+
+                                <div class="stat-card rejected">
+
+                                    <i class="pi pi-times-circle"></i>
+
+                                    <div>
+                                        <span class="stat-value">
+                                            #{addDropRegistrarBean.rejectedCount}
+                                        </span>
+
+                                        <span class="stat-label">
+                                            Rejected
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                            </p:commandLink>
+
+                            <p:commandLink process="@this"
+                                           update="requestTable requestStats"
+                                           action="#{addDropRegistrarBean.filterAll}"
+                                           styleClass="card-link">
+
+                                <div class="stat-card total">
+
+                                    <i class="pi pi-list"></i>
+
+                                    <div>
+                                        <span class="stat-value">
+                                            #{addDropRegistrarBean.totalCount}
+                                        </span>
+
+                                        <span class="stat-label">
+                                            All Requests
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                            </p:commandLink>
+
+                        </div>
+                    </p:outputPanel>
+
+
+                    <!-- ========================= -->
+                    <!-- SEARCH PANEL -->
+                    <!-- ========================= -->
+
+                    <p:panel header="Request Queue"
+                             styleClass="p-shadow-2 p-mt-3">
+
+                        <div class="ui-fluid ui-g">
+
+                            <div class="ui-g-12 ui-md-4">
+                                <p:inputText
+                                    value="#{addDropRegistrarBean.searchKeyword}"
+                                    placeholder="Search Student No / Name"/>
+                            </div>
+
+                            <div class="ui-g-12 ui-md-3">
+
+                                <p:selectOneMenu
+                                    value="#{addDropRegistrarBean.filterStatus}">
+
+                                    <f:selectItem itemLabel="All Status"
+                                                  itemValue="" />
+
+                                    <f:selectItem itemLabel="Pending"
+                                                  itemValue="PENDING" />
+
+                                    <f:selectItem itemLabel="Approved"
+                                                  itemValue="APPROVED" />
+
+                                    <f:selectItem itemLabel="Rejected"
+                                                  itemValue="REJECTED" />
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="ui-g-12 ui-md-2">
+
+                                <p:commandButton
+                                    value="Search"
+                                    icon="pi pi-search"
+                                    action="#{addDropRegistrarBean.searchRequests}"
+                                    update="requestTable"/>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ========================= -->
+                        <!-- REQUEST TABLE -->
+                        <!-- ========================= -->
+
+                        <p:dataTable id="requestTable"
+                                     value="#{addDropRegistrarBean.filteredRequests}"
+                                     var="r"
+                                     paginator="true"
+                                     rows="10"
+                                     reflow="true"
+                                     rowKey="#{r.requestId}"
+                                     emptyMessage="No requests found."
+                                     styleClass="modern-table">
+
+                            <p:column headerText="Student">
+
+                                <div class="student-info">
+
+                                    <strong>
+                                        #{r.student.studentName}
+                                    </strong>
+
+                                    <br/>
+
+                                    <small>
+                                        #{r.student.studno}
+                                    </small>
+
+                                </div>
+
+                            </p:column>
+
+                            <p:column headerText="Request Date">
+
+                                <h:outputText value="#{r.requestDate}">
+                                    <f:convertDateTime
+                                        pattern="MMM dd, yyyy hh:mm a"/>
+                                </h:outputText>
+
+                            </p:column>
+
+                            <p:column headerText="Add">
+
+                                <span class="request-count add">
+
+                                    #{addDropRegistrarBean.getAddCount(r)}
+
+                                </span>
+
+                            </p:column>
+
+                            <p:column headerText="Drop">
+
+                                <span class="request-count drop">
+
+                                    #{addDropRegistrarBean.getDropCount(r)}
+
+                                </span>
+
+                            </p:column>
+
+                            <p:column headerText="Status">
+
+                                <span class="status-badge #{r.status.toLowerCase()}">
+
+                                    #{r.status}
+
+                                </span>
+
+                            </p:column>
+
+                            <p:column headerText="Actions"
+                                      style="width:220px">
+
+                                <p:commandButton
+                                    value="View"
+                                    action="#{addDropRegistrarBean.viewRequest(r)}"
+                                    update=":addDropRegistrarForm:requestDialog"
+                                    oncomplete="PF('reqDlg').show()" />
+
+                                <p:commandButton
+                                    value="Submit"
+                                    action="#{addDropRegistrarBean.processRequest(r)}"
+                                    update=":addDropRegistrarForm"
+                                    rendered="#{r.status eq 'PENDING'}"/>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+                </p:tab>
+
+            </p:tabView>
+
+            <!-- REQUEST DETAILS DIALOG -->
+            <p:dialog id="requestDialog"
+                      widgetVar="reqDlg"
+                      header="Add / Drop Request Details"
+                      modal="true"
+                      width="700">
+
+                <p:panel header="➕ Courses to Add">
+                    <p:dataTable value="#{addDropRegistrarBean.addList}" var="c">
+                        <p:column headerText="Code">#{c.courseCode}</p:column>
+                        <p:column headerText="Title">#{c.courseTitle}</p:column>
+                        <p:column headerText="Units">#{c.units}</p:column>
+                    </p:dataTable>
+                </p:panel>
+
+                <p:panel header="➖ Courses to Drop" styleClass="p-mt-3">
+                    <p:dataTable value="#{addDropRegistrarBean.dropList}" var="c">
+                        <p:column headerText="Code">#{c.courseCode}</p:column>
+                        <p:column headerText="Title">#{c.courseTitle}</p:column>
+                    </p:dataTable>
+                </p:panel>
+
+                <div class="p-text-right p-mt-3">
+                    <p:commandButton value="Approve"
+                                     action="#{addDropRegistrarBean.approve}"
+                                     update="@form"
+                                     styleClass="p-button-success" />
+
+                    <p:commandButton value="Reject"
+                                     action="#{addDropRegistrarBean.reject}"
+                                     update="@form"
+                                     styleClass="p-button-danger p-ml-2" />
+                </div>
+
+            </p:dialog>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+

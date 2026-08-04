@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html>
+        <html xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:h="http://xmlns.jcp.org/jsf/html"
+              xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+              xmlns:p="http://primefaces.org/ui">
+
+            <ui:composition template="template/student_layout.xhtml">
+
+                <ui:define name="content">
+
+                    <h:form id="signupForm">
+
+                        <p:panel header="Create Student Account"
+                                 style="max-width:480px;margin:auto;margin-top:2rem;">
+
+                            <p:messages id="msgs" showDetail="true" closable="true"/>
+
+                            <p:panelGrid columns="1" layout="grid"
+                                         columnClasses="ui-g-12"
+                                         styleClass="ui-fluid">
+
+                                <!-- Student Number -->
+                                <p:outputLabel for="studentNo" value="Student Number"/>
+                                <p:inputText id="studentNo"
+                                             value="#{studentSignUpBean.studentNo}"
+                                             required="true"
+                                             requiredMessage="Student number is required"
+                                             placeholder="e.g. 2024-0001"/>
+
+                                <!-- Password -->
+                                <p:outputLabel for="password" value="Password"/>
+                                <p:password id="password"
+                                            value="#{studentSignUpBean.password}"
+                                            required="true"
+                                            feedback="true"
+                                            requiredMessage="Password is required"
+                                            placeholder="Enter password"/>
+
+                                <!-- Confirm Password -->
+                                <p:outputLabel for="confirmPassword" value="Confirm Password"/>
+                                <p:password id="confirmPassword"
+                                            value="#{studentSignUpBean.confirmPassword}"
+                                            required="true"
+                                            requiredMessage="Please confirm your password"
+                                            placeholder="Re-enter password"/>
+
+                            </p:panelGrid>
+
+
+
+                            <div style="text-align:right">
+                                <p:commandButton value="Create Account"
+                                                 icon="pi pi-user-plus"
+                                                 action="#{studentSignUpBean.register}"
+                                                 update="signupForm"
+                                                 styleClass="ui-button-success"/>
+                            </div>
+
+                        </p:panel>
+
+                    </h:form>
+
+                </ui:define>
+
+            </ui:composition>
+        </html>
+
+    </body>
+</html>

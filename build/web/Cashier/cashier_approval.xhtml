@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="/template/layout-cashier.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+
+        <h2>Pending Enrollment Payments</h2>
+
+        <h:form id="approvalForm">
+
+            <p:growl id="growl" showDetail="true"/>
+
+            <p:dataTable value="#{cashierApprovalBean.pendingEnrollments}"
+                         var="enrollment"
+                         selectionMode="single"
+                         selection="#{cashierApprovalBean.selectedEnrollment}"
+                         rowKey="#{enrollment.enrollment_id != null ? enrollment.enrollment_id : 0}">
+
+                <p:column headerText="Student No">
+                    #{enrollment.studno}
+                </p:column>
+
+                <p:column headerText="Program">
+                    #{enrollment.programName}
+                </p:column>
+
+                <p:column headerText="Status">
+                    #{enrollment.payment_status}
+                </p:column>
+
+            </p:dataTable>
+
+            <br/>
+
+            <p:commandButton value="Verify Online Payment"
+                             action="#{cashierApprovalBean.approveOnlinePayment}"
+                             update="approvalForm growl"
+                             styleClass="ui-button-success"/>
+
+            <p:commandButton value="Process On-site Payment"
+                             action="#{cashierApprovalBean.processOnsitePayment}"
+                             update="approvalForm growl"
+                             styleClass="ui-button-primary"/>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
